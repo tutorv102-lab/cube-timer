@@ -216,7 +216,7 @@ body[data-mode="cfop"] .right > .card:nth-child(2){display:none}
 @keyframes panx{from{transform:translateX(-7%)}to{transform:translateX(7%)}}
 @keyframes breathe{from{transform:scale(1);filter:brightness(.88)}to{transform:scale(1.06);filter:brightness(1.1)}}
 @keyframes huecycle{to{filter:hue-rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){#bgMedia .mwrap{animation:none !important;transition:none}}
+body.calm #bgMedia .mwrap{animation:none !important;transition:none}
 .pickrow{display:flex;gap:10px;flex-wrap:wrap}
 .pickrow label{position:relative;cursor:pointer}
 .pickrow input{position:absolute;opacity:0;width:1px;height:1px}
@@ -464,6 +464,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
       <label class="switch" for="insp"><input type="checkbox" id="insp"><span class="track"><span class="knob"></span></span><span class="sw-label">ตรวจดู 15 วิ</span></label>
       <label class="switch" for="snd"><input type="checkbox" id="snd"><span class="track"><span class="knob"></span></span><span class="sw-label">เสียงเตือน 8/12 วิ</span></label>
     </div>
+    <button class="btn ghost" id="langBtn" type="button" data-notr aria-label="Switch language">EN</button>
     <button class="btn pri" id="studioBtn" type="button">✦ สตูดิโอ</button>
   </header>
 
@@ -587,7 +588,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     bgType: 'scene', sceneTheme: true, sceneA: '#4ff0cf', sceneB: '#ff5fa2',
     grad: ['#3a1c71', '#d76d77', '#ffaf7b'], gradMode: 'mesh', gradAngle: 135, solid: '#0b1020',
     mFit: 'cover', mZoom: 100, mX: 50, mY: 50, mBlur: 0, dim: 0, tint: '#000000',
-    overlay: 'none', density: 50, cardStyle: 'glass', radius: 16, mAnim: 'kenburns', mRate: 100,
+    overlay: 'none', density: 50, cardStyle: 'glass', radius: 16, mAnim: 'kenburns', mRate: 100, motion: 'auto',
   };
   const defUI = () => JSON.parse(JSON.stringify(DEF_UI));
   const isHex = v => /^#[0-9a-f]{6}$/i.test(v || '');
@@ -935,6 +936,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     for (const k in PUZ) s.sessions[k] = s.sessions[k].filter(x => x && typeof x.t === 'number');
     if (!PUZ[s.puzzle]) s.puzzle = '333';
     if (!isCfop(s.cfopLast)) s.cfopLast = 'cfop';
+    if (!['th', 'en'].includes(s.lang)) s.lang = /^th/i.test(navigator.language || '') ? 'th' : 'en';
     s.cfop = Object.assign({ split: 4, xcol: 'U', xmin: 0 }, s.cfop || {});
     if (![4, 7].includes(s.cfop.split)) s.cfop.split = 4;
     if (!['U', 'D', 'any'].includes(s.cfop.xcol)) s.cfop.xcol = 'U';
@@ -955,6 +957,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     if (!['cover', 'contain', 'fill'].includes(u.mFit)) u.mFit = 'cover';
     if (!['none', 'kenburns', 'pan', 'drift', 'breathe', 'hue'].includes(u.mAnim)) u.mAnim = 'kenburns';
     if (typeof u.mRate !== 'number' || !(u.mRate > 0)) u.mRate = 100;
+    if (!['auto', 'on'].includes(u.motion)) u.motion = 'auto';
     for (const k of ['speed', 'bright', 'card', 'blur', 'tsize', 'radius', 'gradAngle', 'mZoom', 'mX', 'mY', 'mBlur', 'dim', 'density']) if (typeof u[k] !== 'number' || !isFinite(u[k])) u[k] = D[k];
     if (rawUi.grad && !rawUi.nstyle) s.ui.nstyle = 'grad';
     if (rawUi.card === 55 && rawUi.blur === 16) { s.ui.card = DEF_UI.card; s.ui.blur = DEF_UI.blur; }
@@ -1023,13 +1026,33 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     ctx.globalAlpha = 1;
   }
   const bgFill = (ctx, w, h) => { ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = rgba(PAL.bg, 1); ctx.fillRect(0, 0, w, h); };
-  function makeStars(n, seed) { const r = rng(seed); return Array.from({ length: n }, () => ({ x: r(), y: r(), s: r() * 1.5 + 0.4, p: r() * 6.28, f: 0.4 + r() * 1.6 })); }
-  function drawStars(ctx, w, h, t, stars, alpha = 1) {
+  function makeStars(n, seed) { const r = rng(seed); return Array.from({ length: n }, () => ({ x: r(), y: r(), s: r() * 1.6 + 0.4, p: r() * 6.28, f: 0.8 + r() * 2.4, z: 0.2 + r() * 0.8 })); }
+  // twinkling stars that drift sideways (nearer stars drift faster); bright ones get a small sparkle cross
+  function drawStars(ctx, w, h, t, stars, alpha = 1, drift = 0.006) {
     const c = PAL.dark ? [255, 255, 255] : PAL.text;
     for (const s of stars) {
-      const a = alpha * (0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * s.f + s.p))) * (PAL.dark ? 0.9 : 0.3);
-      ctx.fillStyle = rgba(c, a); ctx.fillRect(s.x * w, s.y * h, s.s, s.s);
+      const a = alpha * (0.2 + 0.8 * (0.5 + 0.5 * Math.sin(t * s.f + s.p))) * (PAL.dark ? 0.95 : 0.3);
+      const x = (((s.x + t * drift * s.z) % 1) + 1) % 1 * w, y = s.y * h;
+      ctx.fillStyle = rgba(c, a); ctx.fillRect(x, y, s.s, s.s);
+      if (s.s > 1.75 && a > 0.65) { ctx.fillRect(x - s.s, y + s.s / 2 - 0.3, s.s * 3, 0.6); ctx.fillRect(x + s.s / 2 - 0.3, y - s.s, 0.6, s.s * 3); }
     }
+  }
+  // shooting stars every few seconds
+  function meteors(seed) {
+    const r = rng(seed);
+    return { list: [], next: 1.2, draw(ctx, w, h, t, dt) {
+      if (dt > 0) { this.next -= dt; if (this.next <= 0) { this.next = 1.8 + r() * 3.5; this.list.push({ x: w * (0.25 + r() * 0.8), y: h * r() * 0.4, vx: -(380 + r() * 320), vy: 170 + r() * 140, life: 0 }); } }
+      const c = PAL.dark ? [255, 255, 255] : PAL.text;
+      this.list = this.list.filter(m => {
+        m.life += dt; m.x += m.vx * dt; m.y += m.vy * dt;
+        const a = Math.max(0, 1 - m.life / 1.3), L = 0.18;
+        const g = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * L, m.y - m.vy * L);
+        g.addColorStop(0, rgba(c, 0.95 * a)); g.addColorStop(0.3, rgba(mix(c, PAL.a, 0.5), 0.5 * a)); g.addColorStop(1, rgba(PAL.a, 0));
+        ctx.strokeStyle = g; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - m.vx * L, m.y - m.vy * L); ctx.stroke();
+        return m.life < 1.3;
+      });
+    } };
   }
   function vignette(ctx, w, h) {
     const g = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.3, w / 2, h / 2, Math.max(w, h) * 0.78);
@@ -1038,80 +1061,106 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   }
   const SCENES = {
     planet: { name: 'ดาวเคราะห์วงแหวน', make() {
-      const stars = makeStars(260, 7), r = rng(3);
-      const dust = Array.from({ length: 520 }, () => ({ th: r() * 6.283, rr: 1.4 + r() * 0.8, s: r() * 1.6 + 0.4 }));
+      const stars = makeStars(260, 7), r = rng(3), met = meteors(5);
+      const dust = Array.from({ length: 600 }, () => ({ th: r() * 6.283, rr: 1.4 + r() * 0.85, s: r() * 1.6 + 0.5 }));
+      const spots = Array.from({ length: 5 }, (_, i) => ({ lat: -0.55 + r() * 1.1, lon: r() * 6.283, rx: 0.12 + r() * 0.12, ry: 0.05 + r() * 0.05, k: i % 2 }));
       const rings = (ctx, R, t, back) => {
         const a0 = back ? Math.PI : 0, a1 = back ? 2 * Math.PI : Math.PI;
         for (let i = 0; i < 8; i++) {
           const rx = R * (1.42 + i * 0.1), ry = rx * 0.24;
           ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, a0, a1);
-          ctx.strokeStyle = rgba(mix(PAL.a, PAL.b, i / 7), (0.16 + 0.1 * Math.sin(i * 2.1 + t * 0.4)) * (PAL.dark ? 1 : 1.4));
+          ctx.strokeStyle = rgba(mix(PAL.a, PAL.b, i / 7), (0.17 + 0.12 * Math.sin(i * 2.1 + t * 1.2)) * (PAL.dark ? 1 : 1.4));
           ctx.lineWidth = R * 0.075 * (1 - i * 0.07); ctx.stroke();
         }
         const dc = PAL.dark ? [255, 255, 255] : PAL.text;
         for (const d of dust) {
-          const th = d.th + t * 0.05 / d.rr, s = Math.sin(th);
+          const th = d.th + t * 0.45 / d.rr, s = Math.sin(th);
           if (back ? s >= 0 : s < 0) continue;
-          ctx.fillStyle = rgba(dc, 0.45); ctx.fillRect(Math.cos(th) * R * d.rr, s * R * d.rr * 0.24, d.s, d.s);
+          ctx.fillStyle = rgba(dc, 0.35 + 0.3 * Math.max(0, Math.cos(th))); ctx.fillRect(Math.cos(th) * R * d.rr, s * R * d.rr * 0.24, d.s, d.s);
         }
       };
-      return { draw(ctx, w, h, t) {
-        bgFill(ctx, w, h); drawStars(ctx, w, h, t, stars);
+      const moon = (ctx, R, t, front) => {
+        const an = t * 0.4, s = Math.sin(an);
+        if (front ? s < 0 : s >= 0) return;
+        const mx = Math.cos(an) * R * 2.25, my = s * R * 0.55, mr = R * (0.11 + 0.025 * s);
+        const g = ctx.createRadialGradient(mx - mr * 0.4, my - mr * 0.4, mr * 0.1, mx, my, mr);
+        g.addColorStop(0, rgba(mix([235, 238, 255], PAL.a, 0.15), 1)); g.addColorStop(1, rgba(mix([60, 64, 90], PAL.b, 0.2), 1));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, mr, 0, 7); ctx.fill();
+      };
+      return { draw(ctx, w, h, t, dt) {
+        bgFill(ctx, w, h); drawStars(ctx, w, h, t, stars); met.draw(ctx, w, h, t, dt);
         const R = Math.min(w, h) * 0.31, cx = w * 0.5, cy = h * 0.52;
-        ctx.save(); ctx.translate(cx, cy); ctx.rotate(-0.3);
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(-0.3 + 0.07 * Math.sin(t * 0.18));
+        moon(ctx, R, t, false);
         rings(ctx, R, t, true);
-        const gl = ctx.createRadialGradient(0, 0, R * 0.9, 0, 0, R * 1.3);
-        gl.addColorStop(0, rgba(PAL.a, 0.4)); gl.addColorStop(1, rgba(PAL.a, 0));
-        ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(0, 0, R * 1.3, 0, 7); ctx.fill();
+        const gl = ctx.createRadialGradient(0, 0, R * 0.9, 0, 0, R * 1.35);
+        gl.addColorStop(0, rgba(PAL.a, 0.34 + 0.12 * Math.sin(t * 0.9))); gl.addColorStop(1, rgba(PAL.a, 0));
+        ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(0, 0, R * 1.35, 0, 7); ctx.fill();
         ctx.save(); ctx.beginPath(); ctx.arc(0, 0, R, 0, 7); ctx.clip();
         const bands = 15;
         for (let i = 0; i < bands; i++) {
           const y0 = -R + i * (2 * R / bands) - R * 0.04;
           const col = mix(mix(PAL.a, PAL.b, (Math.sin(i * 1.7) + 1) / 2), [255, 255, 255], i % 3 === 0 ? 0.3 : i % 4 === 1 ? 0 : 0.12);
           ctx.fillStyle = rgba(col, 1); ctx.beginPath(); ctx.moveTo(-R - 4, y0);
-          for (let x = -R - 4; x <= R + 8; x += 8) ctx.lineTo(x, y0 + Math.sin(x * 0.022 + t * 0.35 + i * 1.3) * R * 0.03);
+          for (let x = -R - 4; x <= R + 8; x += 8) ctx.lineTo(x, y0 + Math.sin(x * 0.022 + t * 0.9 + i * 1.3) * R * 0.035);
           ctx.lineTo(R + 8, R + 8); ctx.lineTo(-R - 8, R + 8); ctx.closePath(); ctx.fill();
+        }
+        // storms that rotate across the face of the planet
+        for (const sp of spots) {
+          const lon = (sp.lon + t * 0.35) % 6.283 - Math.PI, vis = Math.cos(lon); if (vis <= 0) continue;
+          const yy = sp.lat * R, half = Math.sqrt(Math.max(0, 1 - sp.lat * sp.lat));
+          ctx.fillStyle = rgba(sp.k ? mix(PAL.b, [255, 255, 255], 0.35) : mix(PAL.a, [0, 0, 0], 0.25), 0.75 * vis);
+          ctx.beginPath(); ctx.ellipse(Math.sin(lon) * R * half, yy, sp.rx * R * vis + 1, sp.ry * R, 0, 0, 7); ctx.fill();
         }
         const sh = ctx.createRadialGradient(-R * 0.35, -R * 0.4, R * 0.08, 0, 0, R * 1.05);
         sh.addColorStop(0, 'rgba(255,255,255,0.3)'); sh.addColorStop(0.5, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,0.65)');
         ctx.fillStyle = sh; ctx.fillRect(-R, -R, 2 * R, 2 * R);
         ctx.restore();
         rings(ctx, R, t, false);
+        moon(ctx, R, t, true);
         ctx.restore();
         vignette(ctx, w, h);
       } };
     } },
     galaxy: { name: 'กาแล็กซี', make() {
-      const r = rng(11), stars = makeStars(170, 5);
-      const P = Array.from({ length: 1700 }, (_, i) => { const rr = Math.pow(r(), 0.55); return { rr, base: (i % 3) * 2.094 + rr * 5.2 + (r() - 0.5) * 0.6 * (1 - rr * 0.5), off: (r() - 0.5) * 0.08, s: r() * 1.5 + 0.5 }; });
-      return { draw(ctx, w, h, t) {
-        bgFill(ctx, w, h); drawStars(ctx, w, h, t, stars, 0.7);
-        const cx = w * 0.5, cy = h * 0.5, Rm = Math.max(w, h) * 0.42;
-        const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, Rm * 0.4);
-        core.addColorStop(0, rgba(mix(PAL.a, [255, 255, 255], 0.6), 0.85)); core.addColorStop(0.3, rgba(PAL.a, 0.3)); core.addColorStop(1, rgba(PAL.a, 0));
+      const r = rng(11), stars = makeStars(170, 5), met = meteors(9);
+      const P = Array.from({ length: 1900 }, (_, i) => { const rr = Math.pow(r(), 0.55); return { rr, base: (i % 3) * 2.094 + rr * 5.2 + (r() - 0.5) * 0.6 * (1 - rr * 0.5), off: (r() - 0.5) * 0.08, s: r() * 1.8 + 0.7 }; });
+      return { draw(ctx, w, h, t, dt) {
+        bgFill(ctx, w, h); drawStars(ctx, w, h, t, stars, 0.7); met.draw(ctx, w, h, t, dt);
+        const cx = w * 0.5, cy = h * 0.5, Rm = Math.max(w, h) * 0.42, flat = 0.52 + 0.08 * Math.sin(t * 0.12), tilt = t * 0.04;
+        const ct = Math.cos(tilt), st = Math.sin(tilt);
+        const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, Rm * 0.42);
+        core.addColorStop(0, rgba(mix(PAL.a, [255, 255, 255], 0.6), 0.75 + 0.2 * Math.sin(t * 1.3))); core.addColorStop(0.3, rgba(PAL.a, 0.3)); core.addColorStop(1, rgba(PAL.a, 0));
         ctx.fillStyle = core; ctx.fillRect(0, 0, w, h);
         ctx.globalCompositeOperation = PAL.dark ? 'lighter' : 'source-over';
         for (const p of P) {
-          const ang = p.base + t * 0.05 / (0.3 + p.rr), rad = (p.rr + p.off) * Rm;
-          ctx.fillStyle = rgba(mix(PAL.a, PAL.b, p.rr), 0.6 * (1 - p.rr * 0.55));
-          ctx.fillRect(cx + Math.cos(ang) * rad, cy + Math.sin(ang) * rad * 0.55, p.s, p.s);
+          // inner stars orbit faster than outer ones, the whole disc turns in a full circle
+          const ang = p.base + t * (0.16 + 0.12 / (0.25 + p.rr)), rad = (p.rr + p.off) * Rm;
+          const lx = Math.cos(ang) * rad, ly = Math.sin(ang) * rad * flat;
+          ctx.fillStyle = rgba(mix(PAL.a, PAL.b, p.rr), 0.78 * (1 - p.rr * 0.5));
+          ctx.fillRect(cx + lx * ct - ly * st, cy + lx * st + ly * ct, p.s, p.s);
         }
         ctx.globalCompositeOperation = 'source-over'; vignette(ctx, w, h);
       } };
     } },
     aurora: { name: 'แสงออโรรา', make() {
-      const stars = makeStars(200, 9);
-      return { draw(ctx, w, h, t) {
-        bgFill(ctx, w, h); drawStars(ctx, w, h, t, stars, 0.6);
+      const stars = makeStars(200, 9), met = meteors(13);
+      const yAt = (x, k, h, t) => h * (0.26 + k * 0.12) + Math.sin(x * 0.0035 + t * 0.75 + k * 1.3) * h * 0.08 + Math.sin(x * 0.011 - t * 0.55 + k) * h * 0.025;
+      return { draw(ctx, w, h, t, dt) {
+        bgFill(ctx, w, h); drawStars(ctx, w, h, t, stars, 0.6); met.draw(ctx, w, h, t, dt);
         ctx.globalCompositeOperation = PAL.dark ? 'lighter' : 'source-over';
         for (let k = 0; k < 4; k++) {
-          const col = mix(PAL.a, PAL.b, k / 3), base = h * (0.26 + k * 0.12);
-          for (const [lw, al] of [[110, 0.045], [50, 0.07], [14, 0.16], [2.5, 0.5]]) {
+          const col = mix(PAL.a, PAL.b, (k / 3 + 0.15 * Math.sin(t * 0.3 + k)) % 1);
+          // shimmering vertical curtain rays
+          for (let x = 0; x <= w; x += 6) {
+            const y = yAt(x, k, h, t), hh = h * 0.2 * (0.55 + 0.45 * Math.sin(x * 0.013 + t * 0.9 + k));
+            const a = (0.025 + 0.07 * Math.max(0, Math.sin(x * 0.045 - t * 2.2 + k * 2))) * (PAL.dark ? 1 : 1.4);
+            ctx.fillStyle = rgba(col, a); ctx.fillRect(x, y - hh, 4, hh);
+            ctx.fillStyle = rgba(col, a * 1.6); ctx.fillRect(x, y - hh * 0.4, 4, hh * 0.4);
+          }
+          for (const [lw, al] of [[90, 0.045], [36, 0.08], [10, 0.18], [2.5, 0.55]]) {
             ctx.beginPath();
-            for (let x = -20; x <= w + 20; x += 14) {
-              const y = base + Math.sin(x * 0.0035 + t * 0.35 + k * 1.3) * h * 0.08 + Math.sin(x * 0.011 - t * 0.25 + k) * h * 0.025;
-              x === -20 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            }
+            for (let x = -20; x <= w + 20; x += 14) { const y = yAt(x, k, h, t); x === -20 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
             ctx.strokeStyle = rgba(col, al * (PAL.dark ? 1 : 1.5)); ctx.lineWidth = lw; ctx.stroke();
           }
         }
@@ -1119,56 +1168,62 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
       } };
     } },
     warp: { name: 'วาร์ปดวงดาว', make() {
-      const r = rng(21), S = Array.from({ length: 520 }, () => ({ x: (r() - 0.5) * 2, y: (r() - 0.5) * 2, z: 0.05 + r() * 0.95 }));
+      const r = rng(21), S = Array.from({ length: 600 }, () => ({ x: (r() - 0.5) * 2, y: (r() - 0.5) * 2, z: 0.05 + r() * 0.95 }));
       return { draw(ctx, w, h, t, dt) {
         bgFill(ctx, w, h);
-        const cx = w / 2, cy = h / 2, f = Math.max(w, h) * 0.25;
+        const cx = w / 2, cy = h / 2, f = Math.max(w, h) * 0.25, rot = t * 0.12, cr = Math.cos(rot), sr = Math.sin(rot);
         const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w, h) * 0.5);
-        g.addColorStop(0, rgba(PAL.b, 0.22)); g.addColorStop(1, rgba(PAL.b, 0)); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+        g.addColorStop(0, rgba(PAL.b, 0.2 + 0.08 * Math.sin(t * 1.5))); g.addColorStop(1, rgba(PAL.b, 0)); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
         ctx.lineCap = 'round';
         const base = PAL.dark ? [255, 255, 255] : PAL.text;
         for (const s of S) {
-          const z0 = s.z; s.z -= dt * 0.12;
+          const z0 = s.z; s.z -= dt * 0.22;
           if (s.z <= 0.03) { s.z = 1; s.x = (Math.random() - 0.5) * 2; s.y = (Math.random() - 0.5) * 2; continue; }
-          const x1 = cx + s.x / s.z * f, y1 = cy + s.y / s.z * f, x0 = cx + s.x / z0 * f, y0 = cy + s.y / z0 * f;
+          const rx = s.x * cr - s.y * sr, ry = s.x * sr + s.y * cr;
+          const x1 = cx + rx / s.z * f, y1 = cy + ry / s.z * f, x0 = cx + rx / z0 * f, y0 = cy + ry / z0 * f;
           if (x1 < -60 || x1 > w + 60 || y1 < -60 || y1 > h + 60) { s.z = 1; continue; }
           ctx.strokeStyle = rgba(mix(base, s.x > 0 ? PAL.a : PAL.b, 0.4), Math.min(1, (1 - s.z) * 1.3) * (PAL.dark ? 1 : 0.55));
-          ctx.lineWidth = Math.max(0.6, (1 - s.z) * 2.6);
+          ctx.lineWidth = Math.max(0.6, (1 - s.z) * 2.8);
           ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1 + 0.1, y1 + 0.1); ctx.stroke();
         }
       } };
     } },
     nebula: { name: 'เนบิวลา', make() {
-      const stars = makeStars(180, 13);
-      return { draw(ctx, w, h, t) {
+      const stars = makeStars(200, 13), met = meteors(17);
+      return { draw(ctx, w, h, t, dt) {
         bgFill(ctx, w, h);
-        const B = [[0.2, 0.25, PAL.a], [0.8, 0.3, PAL.b], [0.5, 0.85, mix(PAL.a, PAL.b, 0.5)], [0.12, 0.8, PAL.b], [0.88, 0.85, PAL.a]];
+        const cols = [PAL.a, PAL.b, mix(PAL.a, PAL.b, 0.5), PAL.b, PAL.a, mix(PAL.a, [255, 255, 255], 0.3)];
         ctx.globalCompositeOperation = PAL.dark ? 'lighter' : 'source-over';
-        B.forEach(([x, y, c], i) => {
-          const px = w * (x + 0.12 * Math.sin(t * 0.13 + i * 2)), py = h * (y + 0.12 * Math.cos(t * 0.11 + i * 1.3));
-          const R = Math.max(w, h) * (0.32 + 0.05 * Math.sin(t * 0.2 + i));
+        cols.forEach((c, i) => {
+          // clouds swirl around the centre on different orbits
+          const an = t * (0.12 + i * 0.03) + i * 1.05, orb = 0.18 + (i % 3) * 0.1;
+          const px = w * (0.5 + Math.cos(an) * orb), py = h * (0.5 + Math.sin(an * 1.3) * orb * 0.9);
+          const R = Math.max(w, h) * (0.3 + 0.07 * Math.sin(t * 0.5 + i));
           const g = ctx.createRadialGradient(px, py, 0, px, py, R);
-          g.addColorStop(0, rgba(c, PAL.dark ? 0.42 : 0.45)); g.addColorStop(1, rgba(c, 0));
+          g.addColorStop(0, rgba(c, PAL.dark ? 0.38 : 0.42)); g.addColorStop(1, rgba(c, 0));
           ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
         });
-        ctx.globalCompositeOperation = 'source-over'; drawStars(ctx, w, h, t, stars, 0.5);
+        ctx.globalCompositeOperation = 'source-over'; drawStars(ctx, w, h, t, stars, 0.6, 0.012); met.draw(ctx, w, h, t, dt);
       } };
     } },
     contour: { name: 'เส้นชั้นความสูง', make() {
       return { draw(ctx, w, h, t) {
         bgFill(ctx, w, h); ctx.lineWidth = 1.2;
-        [[0.3, 0.42], [0.76, 0.62]].forEach(([cx, cy], ci) => {
+        [[0.3, 0.42], [0.76, 0.62]].forEach(([cx0, cy0], ci) => {
+          const cx = (cx0 + 0.05 * Math.sin(t * 0.2 + ci * 2)) * w, cy = (cy0 + 0.05 * Math.cos(t * 0.17 + ci)) * h, spin = t * (ci ? -0.12 : 0.1);
           for (let i = 1; i <= 26; i++) {
             const r = i * Math.max(w, h) * 0.022;
             ctx.beginPath();
             for (let j = 0; j <= 96; j++) {
               const th = j / 96 * Math.PI * 2;
-              const rr = r * (1 + 0.1 * Math.sin(3 * th + t * 0.25 + i * 0.35 + ci) + 0.06 * Math.sin(5 * th - t * 0.18 + i * 0.2));
-              const x = cx * w + Math.cos(th) * rr, y = cy * h + Math.sin(th) * rr * 0.8;
+              const rr = r * (1 + 0.1 * Math.sin(3 * th + t * 0.6 + i * 0.35 + ci) + 0.06 * Math.sin(5 * th - t * 0.45 + i * 0.2));
+              const x = cx + Math.cos(th + spin) * rr, y = cy + Math.sin(th + spin) * rr * 0.8;
               j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
             }
             ctx.closePath();
-            ctx.strokeStyle = rgba(mix(PAL.a, PAL.b, i / 26), (i % 5 === 0 ? 0.42 : 0.17) * (PAL.dark ? 1 : 1.3));
+            // a bright ring travels outward through the lines
+            const pulse = Math.max(0, Math.sin(i * 0.5 - t * 1.6)) ** 6;
+            ctx.strokeStyle = rgba(mix(PAL.a, PAL.b, i / 26), ((i % 5 === 0 ? 0.4 : 0.15) + pulse * 0.45) * (PAL.dark ? 1 : 1.3));
             ctx.stroke();
           }
         });
@@ -1176,50 +1231,53 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
       } };
     } },
     synth: { name: 'ซินธ์เวฟ', make() {
-      const stars = makeStars(160, 17);
-      return { draw(ctx, w, h, t) {
+      const stars = makeStars(160, 17), met = meteors(19);
+      return { draw(ctx, w, h, t, dt) {
         const hz = h * 0.6;
         const sky = ctx.createLinearGradient(0, 0, 0, hz);
         sky.addColorStop(0, rgba(PAL.bg, 1)); sky.addColorStop(1, rgba(mix(PAL.bg, PAL.b, PAL.dark ? 0.35 : 0.25), 1));
         ctx.fillStyle = sky; ctx.fillRect(0, 0, w, hz);
-        drawStars(ctx, w, hz, t, stars, 0.8);
-        const sr = Math.min(w, h) * 0.2, sx = w / 2, sy = hz - sr * 0.3;
-        const gl = ctx.createRadialGradient(sx, sy, sr * 0.6, sx, sy, sr * 2);
-        gl.addColorStop(0, rgba(PAL.a, 0.35)); gl.addColorStop(1, rgba(PAL.a, 0)); ctx.fillStyle = gl; ctx.fillRect(0, 0, w, hz);
+        drawStars(ctx, w, hz, t, stars, 0.8); met.draw(ctx, w, hz, t, dt);
+        const sr = Math.min(w, h) * 0.2 * (1 + 0.025 * Math.sin(t * 1.2)), sx = w / 2, sy = hz - sr * 0.3;
+        const gl = ctx.createRadialGradient(sx, sy, sr * 0.6, sx, sy, sr * 2.1);
+        gl.addColorStop(0, rgba(PAL.a, 0.32 + 0.1 * Math.sin(t * 1.2))); gl.addColorStop(1, rgba(PAL.a, 0)); ctx.fillStyle = gl; ctx.fillRect(0, 0, w, hz);
         ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, hz); ctx.clip();
         ctx.beginPath(); ctx.arc(sx, sy, sr, 0, 7); ctx.clip();
         const sg = ctx.createLinearGradient(0, sy - sr, 0, sy + sr);
         sg.addColorStop(0, rgba(PAL.a, 1)); sg.addColorStop(1, rgba(PAL.b, 1)); ctx.fillStyle = sg; ctx.fillRect(sx - sr, sy - sr, 2 * sr, 2 * sr);
         const sky2 = rgba(mix(PAL.bg, PAL.b, PAL.dark ? 0.3 : 0.2), 1);
-        for (let i = 0; i < 7; i++) { ctx.fillStyle = sky2; ctx.fillRect(sx - sr, sy + sr * (0.06 + i * 0.13), 2 * sr, sr * (0.015 + 0.013 * i)); }
+        for (let i = 0; i < 8; i++) { const k = (i / 8 + t * 0.06) % 1; ctx.fillStyle = sky2; ctx.fillRect(sx - sr, sy + sr * (k * 1.05 - 0.05), 2 * sr, sr * (0.01 + 0.05 * k)); }
         ctx.restore();
         ctx.fillStyle = rgba(mix(PAL.bg, [0, 0, 0], PAL.dark ? 0.35 : 0.04), 1); ctx.fillRect(0, hz, w, h - hz);
-        ctx.strokeStyle = rgba(PAL.b, 0.6); ctx.lineWidth = 1.2;
-        for (let i = -26; i <= 26; i++) { ctx.beginPath(); ctx.moveTo(w / 2 + i * w * 0.006, hz); ctx.lineTo(w / 2 + i * w * 0.13, h); ctx.stroke(); }
-        const sp = (t * 0.35) % 1;
-        for (let k = 0; k < 24; k++) {
+        ctx.lineWidth = 1.2;
+        const sway = Math.sin(t * 0.25) * w * 0.04;
+        for (let i = -26; i <= 26; i++) { ctx.strokeStyle = rgba(PAL.b, 0.6); ctx.beginPath(); ctx.moveTo(w / 2 + i * w * 0.006, hz); ctx.lineTo(w / 2 + i * w * 0.13 + sway, h); ctx.stroke(); }
+        const sp = (t * 0.9) % 1;
+        for (let k = 0; k < 26; k++) {
           const z = k + 1 - sp; if (z < 0.3) continue;
           const y = hz + (h - hz) / z;
-          ctx.strokeStyle = rgba(PAL.a, Math.min(1, 1.6 / z) * 0.6);
+          ctx.strokeStyle = rgba(PAL.a, Math.min(1, 1.6 / z) * 0.65);
           ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
         }
         const hl = ctx.createLinearGradient(0, hz - 2, 0, hz + 24);
-        hl.addColorStop(0, rgba(PAL.a, 0.7)); hl.addColorStop(1, rgba(PAL.a, 0)); ctx.fillStyle = hl; ctx.fillRect(0, hz - 2, w, 26);
+        hl.addColorStop(0, rgba(PAL.a, 0.7 + 0.2 * Math.sin(t * 2))); hl.addColorStop(1, rgba(PAL.a, 0)); ctx.fillStyle = hl; ctx.fillRect(0, hz - 2, w, 26);
       } };
     } },
     cuberain: { name: 'ลูกบิดลอย', make() {
       const stars = makeStars(150, 23), r = rng(31);
-      const C = Array.from({ length: 24 }, () => ({ x: r(), y: r(), z: 0.25 + r() * 0.75, ph: r() * 6.3, cols: Array.from({ length: 27 }, () => CUBEC[Math.floor(r() * 6)]) }));
+      const C = Array.from({ length: 26 }, () => ({ x: r(), y: r(), z: 0.25 + r() * 0.75, ph: r() * 6.3, spin: (r() - 0.5) * 0.9, cols: Array.from({ length: 27 }, () => CUBEC[Math.floor(r() * 6)]) }));
       C.sort((a, b) => a.z - b.z);
       return { draw(ctx, w, h, t, dt) {
         bgFill(ctx, w, h); drawStars(ctx, w, h, t, stars, 0.6);
         const g = ctx.createRadialGradient(w / 2, h * 1.05, 0, w / 2, h * 1.05, Math.max(w, h) * 0.8);
-        g.addColorStop(0, rgba(PAL.a, 0.35)); g.addColorStop(0.5, rgba(PAL.b, 0.12)); g.addColorStop(1, rgba(PAL.b, 0)); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+        g.addColorStop(0, rgba(PAL.a, 0.32 + 0.08 * Math.sin(t))); g.addColorStop(0.5, rgba(PAL.b, 0.12)); g.addColorStop(1, rgba(PAL.b, 0)); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
         for (const c of C) {
-          const s = 10 + c.z * 34, py = ((c.y - t * (0.01 + c.z * 0.03)) % 1.2 + 1.2) % 1.2 - 0.1;
-          const px = c.x * w + Math.sin(t * 0.4 + c.ph) * 18 * c.z;
-          if (dt && Math.random() < dt * 0.25) { const f = rnd(3) * 9, row = c.cols.slice(f, f + 9); for (let k = 0; k < 3; k++) row.unshift(row.pop()); c.cols.splice(f, 9, ...row); }
-          isoCube(ctx, px, py * h, s, c.cols, 0.3 + c.z * 0.65);
+          const s = 10 + c.z * 34, py = ((c.y - t * (0.02 + c.z * 0.045)) % 1.2 + 1.2) % 1.2 - 0.1;
+          const px = c.x * w + Math.sin(t * 0.6 + c.ph) * 26 * c.z;
+          if (dt && Math.random() < dt * 0.6) { const f = rnd(3) * 9, row = c.cols.slice(f, f + 9); for (let k = 0; k < 3; k++) row.unshift(row.pop()); c.cols.splice(f, 9, ...row); }
+          ctx.save(); ctx.translate(px, py * h); ctx.rotate(t * c.spin + Math.sin(t * 0.8 + c.ph) * 0.15);
+          isoCube(ctx, 0, 0, s, c.cols, 0.3 + c.z * 0.65);
+          ctx.restore();
         }
         vignette(ctx, w, h);
       } };
@@ -1229,12 +1287,12 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
       return { draw(ctx, w, h, t, dt) {
         bgFill(ctx, w, h);
         const fs = 20, nC = Math.ceil(w / fs);
-        if (cols.length !== nC) cols = Array.from({ length: nC }, () => ({ y: Math.random() * h / fs, sp: 3 + Math.random() * 9, len: 8 + rnd(18), ch: Array.from({ length: 48 }, () => chars[rnd(chars.length)]) }));
+        if (cols.length !== nC) cols = Array.from({ length: nC }, () => ({ y: Math.random() * h / fs, sp: 4 + Math.random() * 11, len: 8 + rnd(18), ch: Array.from({ length: 48 }, () => chars[rnd(chars.length)]) }));
         ctx.font = `600 ${fs - 3}px "JetBrains Mono", ui-monospace, monospace`; ctx.textAlign = 'center';
         cols.forEach((c, i) => {
           c.y += c.sp * dt;
-          if ((c.y - c.len) * fs > h) { c.y = -Math.random() * 12; c.sp = 3 + Math.random() * 9; }
-          if (Math.random() < dt * 2) c.ch[rnd(48)] = chars[rnd(chars.length)];
+          if ((c.y - c.len) * fs > h) { c.y = -Math.random() * 12; c.sp = 4 + Math.random() * 11; }
+          if (Math.random() < dt * 3) c.ch[rnd(48)] = chars[rnd(chars.length)];
           const head = Math.floor(c.y);
           for (let k = 0; k < c.len; k++) {
             const row = head - k; if (row < 0) continue;
@@ -1248,42 +1306,50 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
       } };
     } },
     waves: { name: 'คลื่นทะเล', make() {
-      const stars = makeStars(140, 41);
-      return { draw(ctx, w, h, t) {
-        bgFill(ctx, w, h); drawStars(ctx, w, h * 0.55, t, stars, 0.7);
-        const mg = ctx.createRadialGradient(w * 0.72, h * 0.24, 0, w * 0.72, h * 0.24, Math.min(w, h) * 0.32);
+      const stars = makeStars(140, 41), met = meteors(43);
+      return { draw(ctx, w, h, t, dt) {
+        bgFill(ctx, w, h); drawStars(ctx, w, h * 0.55, t, stars, 0.7); met.draw(ctx, w, h * 0.5, t, dt);
+        const mx = w * 0.72, my = h * 0.24;
+        const mg = ctx.createRadialGradient(mx, my, 0, mx, my, Math.min(w, h) * 0.32);
         mg.addColorStop(0, rgba(mix(PAL.a, [255, 255, 255], 0.7), 0.95)); mg.addColorStop(0.18, rgba(mix(PAL.a, [255, 255, 255], 0.4), 0.6)); mg.addColorStop(1, rgba(PAL.a, 0));
         ctx.fillStyle = mg; ctx.fillRect(0, 0, w, h);
         for (let k = 0; k < 6; k++) {
           const base = h * (0.48 + k * 0.09), col = mix(mix(PAL.a, PAL.b, k / 5), PAL.dark ? [0, 0, 0] : [255, 255, 255], PAL.dark ? k * 0.13 : k * 0.06);
           ctx.beginPath(); ctx.moveTo(0, h);
-          for (let x = 0; x <= w + 10; x += 10) ctx.lineTo(x, base + Math.sin(x * 0.006 * (1 + k * 0.15) + t * (0.4 + k * 0.12) + k) * h * 0.022 * (1 + k * 0.3) + Math.sin(x * 0.017 - t * 0.6 + k * 2) * h * 0.007);
+          for (let x = 0; x <= w + 10; x += 10) ctx.lineTo(x, base + Math.sin(x * 0.006 * (1 + k * 0.15) + t * (0.8 + k * 0.2) + k) * h * 0.024 * (1 + k * 0.3) + Math.sin(x * 0.017 - t * 1.1 + k * 2) * h * 0.008);
           ctx.lineTo(w, h); ctx.closePath(); ctx.fillStyle = rgba(col, 0.5 + k * 0.09); ctx.fill();
+          if (k < 3) { // moonlight glittering on the water
+            for (let j = 0; j < 14; j++) {
+              const gx = mx + Math.sin(j * 12.9 + t * 0.7) * w * 0.05 * (1 + k), gy = base + 6 + j * 3 + k * 4, a = Math.max(0, Math.sin(t * 3 + j * 1.7 + k)) * 0.6;
+              ctx.fillStyle = rgba([255, 255, 255], a * (PAL.dark ? 0.8 : 0.5)); ctx.fillRect(gx, gy, 10 + (j % 4) * 6, 1.5);
+            }
+          }
         }
       } };
     } },
     hex: { name: 'รังผึ้งนีออน', make() {
       return { draw(ctx, w, h, t) {
         bgFill(ctx, w, h);
-        const R = 26, hx = R * 1.732, cx = w / 2, cy = h / 2; ctx.lineWidth = 1.3;
+        const R = 26, hx = R * 1.732, cx = w / 2 + Math.cos(t * 0.35) * w * 0.25, cy = h / 2 + Math.sin(t * 0.35) * h * 0.25; ctx.lineWidth = 1.3;
         for (let row = -1; row * R * 1.5 < h + R; row++) for (let col = -1; col * hx < w + hx; col++) {
           const x = col * hx + (row & 1 ? hx / 2 : 0), y = row * R * 1.5, d = Math.hypot(x - cx, y - cy);
-          const p = Math.max(0, Math.sin(d * 0.012 - t * 1.4)), a = 0.07 + 0.55 * Math.pow(p, 6);
+          const p = Math.max(0, Math.sin(d * 0.012 - t * 2.4)), a = 0.07 + 0.55 * Math.pow(p, 6);
           ctx.beginPath();
           for (let k = 0; k < 6; k++) { const an = Math.PI / 3 * k + Math.PI / 6; const px = x + Math.cos(an) * (R - 2), py = y + Math.sin(an) * (R - 2); k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
           ctx.closePath();
-          const c = mix(PAL.a, PAL.b, (Math.sin(d * 0.004 + t * 0.2) + 1) / 2);
+          const c = mix(PAL.a, PAL.b, (Math.sin(d * 0.004 + t * 0.6) + 1) / 2);
           ctx.strokeStyle = rgba(c, a * (PAL.dark ? 1 : 1.3)); ctx.stroke();
-          if (p > 0.96) { ctx.fillStyle = rgba(c, 0.1); ctx.fill(); }
+          if (p > 0.96) { ctx.fillStyle = rgba(c, 0.12); ctx.fill(); }
         }
         vignette(ctx, w, h);
       } };
     } },
-    plain: { name: 'เรียบๆ', static: true, make() {
-      return { draw(ctx, w, h) {
+    plain: { name: 'เรียบๆ', make() {
+      return { draw(ctx, w, h, t) {
         bgFill(ctx, w, h);
-        [[0.1, 0.06, PAL.a, 0.42], [0.94, 0.18, PAL.b, 0.46], [0.58, 1.04, mix(PAL.a, PAL.b, 0.5), 0.5]].forEach(([x, y, c, r]) => {
-          const g = ctx.createRadialGradient(w * x, h * y, 0, w * x, h * y, Math.max(w, h) * r);
+        [[0.1, 0.06, PAL.a, 0.42], [0.94, 0.18, PAL.b, 0.46], [0.58, 1.04, mix(PAL.a, PAL.b, 0.5), 0.5]].forEach(([x, y, c, r], i) => {
+          const px = w * (x + 0.08 * Math.sin(t * 0.2 + i * 2)), py = h * (y + 0.08 * Math.cos(t * 0.17 + i));
+          const g = ctx.createRadialGradient(px, py, 0, px, py, Math.max(w, h) * r);
           g.addColorStop(0, rgba(c, PAL.dark ? 0.32 : 0.4)); g.addColorStop(1, rgba(c, 0)); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
         });
       } };
@@ -1425,6 +1491,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   try { bctx = cv.getContext('2d'); octx = ovc.getContext('2d'); } catch (e) { /* canvas unavailable */ }
   let scene = null, sceneKey = '', tBg = 6, lastT = 0, bgW = 0, bgH = 0, dpr = 1, ov = null, ovKey = '';
   const reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const calm = () => reduced && state.ui.motion !== 'on';
   const bgMode = () => state.ui.bgType === 'media' && !mediaInfo ? 'scene' : state.ui.bgType;
   function drawBg(dt) {
     if (!bctx || !PAL) return;
@@ -1457,7 +1524,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   const isStatic = () => { const m = bgMode(); return m === 'solid' || m === 'media' || (m === 'scene' && !!(SCENES[state.ui.scene] || {}).static); };
   function bgLoop(now) {
     const dt = Math.min(0.05, lastT ? (now - lastT) / 1000 : 0); lastT = now;
-    const paused = reduced || state.ui.speed <= 0 || (state.ui.freeze && phase === 'running');
+    const paused = calm() || state.ui.speed <= 0 || (state.ui.freeze && phase === 'running');
     if (!paused) {
       tBg += dt * state.ui.speed;
       if (!isStatic()) drawBg(dt * state.ui.speed);
@@ -1488,6 +1555,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     for (const [k] of LAYOUTS) body.classList.toggle('layout-' + k, u.layout === k);
     for (const [k] of CARD_STYLES) body.classList.toggle('cs-' + k, u.cardStyle === k);
     body.classList.toggle('hide-panels', !!u.hide);
+    body.classList.toggle('calm', calm());
     for (const k of ['neon', 'grad', 'outline', 'plain']) body.classList.toggle('ns-' + k, u.nstyle === k);
     const nf = NUM_FONTS[u.fnum], uf = UI_FONTS[u.fui];
     ensureFont(nf.q); ensureFont(uf.q);
@@ -1762,7 +1830,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     }
     if (hold === 'wait') { s = 'wait'; hint = 'ค้างไว้…'; if (phase === 'idle') txt = '0.00'; }
     if (hold === 'ready') { s = 'ready'; hint = 'ปล่อยเพื่อเริ่ม!'; if (phase === 'idle') txt = '0.00'; }
-    zone.dataset.s = s; setDisplay(txt); hintEl.textContent = hint;
+    zone.dataset.s = s; setDisplay(txt); hintEl.textContent = trText(hint);
     const idle = phase === 'idle' && !hold && !armed && sess().length > 0;
     penbar.classList.toggle('off', !idle);
     $('#lastcase').hidden = !(idle && $('#lastcase').dataset.has);
@@ -1929,7 +1997,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
       ? extra || `<div class="reveal">${caseLL(set, s.cs)}<div><div class="nm">${caseTitle(set, s.cs)}</div><div class="grp">กลุ่ม ${groupOf(set, s.cs)}</div><div class="alg">${CASES[set][s.cs].alg}</div></div></div>` : '';
     openModal(`
       <h3>ครั้งที่ ${i + 1} · ${solveText(s)}</h3>
-      <p class="muted">${new Date(s.d).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })}${s.ex ? ' · ตัวอย่าง' : ''}${s.pen ? ` · เวลาจริง ${fmt(s.t)}` : ''}</p>
+      <p class="muted">${new Date(s.d).toLocaleString(state.lang === 'en' ? 'en-GB' : 'th-TH', { dateStyle: 'medium', timeStyle: 'short' })}${s.ex ? ' · ตัวอย่าง' : ''}${s.pen ? ` · เวลาจริง ${fmt(s.t)}` : ''}</p>
       ${caseInfo}
       <div class="label">${set ? 'เซ็ตอัป' : 'สแครมเบิล'}</div>
       <p class="scr-text">${s.scr}</p>
@@ -1997,7 +2065,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   const range = (key, name, desc, min, max, step, val) =>
     setRow(name, desc, `<input type="range" id="set-${key}" data-set="${key}" min="${min}" max="${max}" step="${step}" value="${val}"><output data-val="${key}">${val}${UNITS[key] || '%'}</output>`);
   const toggle = (key, name, desc, on) =>
-    setRow(name, desc, `<label class="switch wide" for="set-${key}"><input type="checkbox" id="set-${key}" data-set="${key}" ${on ? 'checked' : ''}><span class="track"><span class="knob"></span></span><span class="sw-label">${on ? 'เปิด' : 'ปิด'}</span></label>`);
+    setRow(name, desc, `<label class="switch wide" for="set-${key}"><input type="checkbox" id="set-${key}" data-set="${key}" ${on ? 'checked' : ''}><span class="track"><span class="knob"></span></span><span class="sw-label">${on ? 'เปิดอยู่' : 'ปิดอยู่'}</span></label>`);
   const opts = (act, name, desc, items, cur) =>
     setRow(name, desc, `<div class="opts">${items.map(([k, l]) => `<button class="btn" type="button" data-act="${act}:${k}" aria-pressed="${k === cur}">${l}</button>`).join('')}</div>`);
   const colors = (name, desc, items) =>
@@ -2043,6 +2111,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
         ${range('mBlur', 'เบลอภาพ', 'ช่วยให้ตัวหนังสืออ่านง่ายขึ้น', 0, 30, 1, u.mBlur)}</div>`;
       }
       return `<h3>พื้นหลัง</h3><p class="sub">เลือกประเภท แล้วปรับได้อิสระ ทุกอย่างเปลี่ยนให้เห็นทันที</p>
+      ${reduced ? (u.motion === 'on' ? setRow('แอนิเมชันเปิดอยู่', 'เครื่องนี้ตั้งให้ลดภาพเคลื่อนไหว แต่คุณเลือกเปิดพื้นหลังเคลื่อนไหวไว้', '<div class="opts"><button class="btn" type="button" data-act="motion:auto">กลับไปหยุดนิ่ง</button></div>') : setRow('พื้นหลังหยุดนิ่งอยู่', 'เครื่องนี้ตั้งค่าให้ลดภาพเคลื่อนไหว (Windows: ปิด Show animations) หน้าเว็บเลยหยุดพื้นหลังไว้', '<div class="opts"><button class="btn pri" type="button" data-act="motion:on">เปิดแอนิเมชันพื้นหลัง</button></div>')) : ''}
       ${opts('bgt', 'ประเภทพื้นหลัง', 'ฉากเคลื่อนไหว ไล่สีเอง สีพื้น หรือไฟล์ของคุณเอง', [['scene', 'ฉากเคลื่อนไหว'], ['gradient', 'ไล่สีเอง'], ['solid', 'สีพื้น'], ['media', 'รูป / GIF / วิดีโอ']], u.bgType)}
       ${body}
       <div>${range('dim', 'ความมืดทับ', 'ทับสีลงบนพื้นหลังให้ตัวหนังสือเด่นขึ้น', 0, 85, 5, u.dim)}
@@ -2128,6 +2197,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     else if (k === 'solid') u.solid = v;
     else if (k === 'mfit') u.mFit = v;
     else if (k === 'manim') u.mAnim = v;
+    else if (k === 'motion') u.motion = v;
     else if (k === 'mdel') { clearMedia(); mediaDel().catch(() => {}); }
     else if (k === 'ovl') u.overlay = v;
     else if (k === 'skin') state.skin = v;
@@ -2155,7 +2225,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
       u[key] = num; const o = sheet.querySelector(`[data-val="${key}"]`); if (o) o.textContent = el.value + (UNITS[key] || '%');
     }
     else if (['freeze', 'hide', 'sceneTheme'].includes(key)) {
-      u[key] = el.checked; const l = el.parentElement.querySelector('.sw-label'); if (l) l.textContent = el.checked ? 'เปิด' : 'ปิด';
+      u[key] = el.checked; const l = el.parentElement.querySelector('.sw-label'); if (l) l.textContent = el.checked ? 'เปิดอยู่' : 'ปิดอยู่';
       if (key === 'sceneTheme') { save(); applyUI(); rerenderStudio(); return; }
     }
     else if (key === 'ca' || key === 'cb') {
@@ -2234,16 +2304,57 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   $('#copyStats').addEventListener('click', () => {
     const list = sess(), set = trainSet();
     if (!list.length) return toast('ยังไม่มีเวลาให้คัดลอก');
-    copy([
+    copy(trText([
       `Cube Timer · ${PUZ[state.puzzle].label} · ${list.length} ครั้ง`,
       `ดีที่สุด ${fmt(S.best)} · mean ${fmt(S.mean)}`,
       AVG_NS.map(N => `ao${N} ${fmt(S.cur(N))} (ดีสุด ${fmt(S.bestOf(N))})`).join(' · '),
       '',
       ...list.map((s, i) => `${i + 1}. ${solveText(s)}${set && s.cs ? '  [' + caseTitle(set, s.cs) + ']' : ''}   ${s.scr}`),
-    ].join('\n'), 'คัดลอกสถิติแล้ว');
+    ].join('\n')), 'คัดลอกสถิติแล้ว');
+  });
+
+  /* ---------- language (Thai source text, English via phrase table) ---------- */
+  const EN = {"เริ่มจากลูกที่แก้เสร็จแล้ว ถือสีเหลืองไว้ด้านบน สีเขียวหันเข้าหาตัว แล้วหมุนตามนี้ · คู่ที่ต้องใส่คือช่องหน้า-ขวา": "Start from a solved cube, yellow on top and green facing you, then apply these moves · the pair goes into the front-right slot", "เริ่มจากลูกที่แก้เสร็จแล้ว ถือสีเหลืองไว้ด้านบน สีเขียวหันเข้าหาตัว แล้วหมุนตามนี้": "Start from a solved cube, yellow on top and green facing you, then apply these moves", "ชั้นบน · ขาวหันข้าง": "Top layer · white facing sideways", "ชั้นบน · ขาวหันขึ้น": "Top layer · white facing up", "มุมอยู่ในช่องแล้ว": "Corner already in the slot", "ขอบอยู่ในช่องแล้ว": "Edge already in the slot", "อยู่ในช่องทั้งคู่": "Both pieces in the slot", "พื้นหลังหยุดนิ่งอยู่": "The background is paused", "เครื่องนี้ตั้งค่าให้ลดภาพเคลื่อนไหว (Windows: ปิด Show animations) หน้าเว็บเลยหยุดพื้นหลังไว้": "This device asks for reduced motion (Windows: Show animations is off), so the page paused the background", "รูป JPG / PNG / WebP · GIF ขยับได้ · วิดีโอ MP4 / WebM / MOV · กด Ctrl+V วางรูปที่คัดลอกไว้ก็ได้": "JPG / PNG / WebP images · animated GIFs · MP4 / WebM / MOV videos · or press Ctrl+V to paste a copied image", "แอนิเมชันเปิดอยู่": "Animation is on", "เครื่องนี้ตั้งให้ลดภาพเคลื่อนไหว แต่คุณเลือกเปิดพื้นหลังเคลื่อนไหวไว้": "This device asks for reduced motion, but you turned the animated background on", "แอนิเมชันภาพ": "Image animation", "ทำให้รูปนิ่งๆ ขยับได้ ความเร็วปรับที่ ความเร็วแอนิเมชัน ด้านล่าง": "Brings a still image to life. Set the pace with Animation speed below", "คัดลอกข้อมูลทั้งหมด": "Copy all data", "ได้เป็นข้อความ JSON เก็บไว้ในโน้ตได้ (ไม่รวมไฟล์พื้นหลัง)": "Copies JSON text you can keep in a note (background files not included)", "เวลาถูกเก็บไว้ในเบราว์เซอร์นี้เท่านั้น ถ้าจะย้ายเครื่องให้คัดลอกข้อมูลไปเก็บไว้": "Your times are stored only in this browser. Copy your data to move it to another device", "กดทีเดียวเปลี่ยนทั้งพื้นหลัง สี ฟอนต์ และการ์ด แล้วค่อยปรับต่อในหมวดอื่นได้": "One click sets the background, colours, fonts and cards. Fine-tune them in the other sections", "จับเวลาโหมดนี้แล้วกดทุกครั้งที่จบแต่ละช่วง จะเห็นว่าช่วงไหนใช้เวลามากสุด": "Time solves in this mode and press at the end of each stage to see which stage takes longest", "นำเข้าข้อมูล": "Import data", "วาง JSON ที่คัดลอกไว้ จะแทนที่ข้อมูลทั้งหมดในเครื่องนี้": "Paste JSON you copied earlier. It replaces all data in this browser", "พื้นหลังหยุดนิ่งเพราะเครื่องตั้งค่าลดภาพเคลื่อนไหว เปิดได้ที่ สตูดิโอ → พื้นหลัง": "The background is paused because this device asks for reduced motion. Turn it on in Studio → Background", "แตะเพื่อเริ่มตรวจดู 15 วินาที": "Tap to start the 15-second inspection", "กด Space เพื่อเริ่มตรวจดู 15 วินาที": "Press Space to start the 15-second inspection", "ประเภทพื้นหลัง": "Background type", "ฉากเคลื่อนไหว ไล่สีเอง สีพื้น หรือไฟล์ของคุณเอง": "Animated scene, your own gradient, a solid colour, or your own file", "รีเซ็ตการตั้งค่าหน้าตา": "Reset appearance settings", "กลับเป็นค่าเริ่มต้น เวลาที่จับไว้ไม่หาย": "Back to defaults. Your times are kept", "ตั้งแล้ว แต่เบราว์เซอร์นี้บันทึกไฟล์ไม่ได้ จะหายเมื่อปิดหน้า": "Set, but this browser can't save the file, so it will be gone when you close the page", "หยุดพื้นหลังตอนจับเวลา": "Pause background while timing", "ช่วยให้ตัวจับเวลาลื่นบนเครื่องช้า": "Keeps the timer smooth on slower devices", "เลือกฟอนต์ตัวเลขจับเวลา ฟอนต์ตัวหนังสือ และสไตล์ของตัวเลข": "Pick the timer font, the text font and the digit style", "เลือกประเภท แล้วปรับได้อิสระ ทุกอย่างเปลี่ยนให้เห็นทันที": "Pick a type, then adjust anything. Changes show instantly", "ครั้งในเซสชันนี้ และย้อนกลับไม่ได้ เซสชันอื่นไม่ถูกแตะ": "solves in this session and can't be undone. Other sessions are not touched", "ซ่อนแผงตอนจับเวลา": "Hide panels while timing", "เหลือแค่ตัวเลขกลางจอ ไม่ให้วอกแวก": "Leaves only the time on screen, no distractions", "เวลาที่เห็นเป็นตัวอย่าง จะหายไปเองเมื่อจับเวลาครั้งแรก": "These are sample times. They disappear after your first solve", "ตั้งเป้าแยกตามโหมด สลับโหมดด้านบนเพื่อตั้งของโหมดอื่น": "Goals are set per mode. Switch modes at the top to set another one", "อนุภาคที่ลอยทับพื้นหลังแบบไหนก็ได้ รวมถึงรูปของคุณเอง": "Particles that float over any background, including your own image", "ความมืดทับ": "Dim overlay", "ทับสีลงบนพื้นหลังให้ตัวหนังสือเด่นขึ้น": "Tints the background so text stands out", "ยังไม่ได้เลือกไฟล์ ระหว่างนี้จะแสดงฉากเคลื่อนไหวแทน": "No file chosen yet. An animated scene shows in the meantime", "สีที่ทับ": "Overlay colour", "ปกติใช้สีดำ ลองสีอื่นเพื่ออารมณ์ต่างไป": "Usually black. Try another colour for a different mood", "ตัวเลขระหว่างจับ": "Time while solving", "บางคนชอบไม่เห็นเวลาระหว่างแก้": "Some people prefer not to see the time while solving", "กดค้างแล้วปล่อยเพื่อเริ่ม · ปุ่มใดก็ได้เพื่อหยุด": "hold and release to start · any key to stop", "เคส · ใต้ภาพคือจำนวนครั้งและเวลาเฉลี่ยของเคสนั้น": "cases · under each picture: solves and average time for that case", "ทางที่สั้นที่สุดของแต่ละสี": "Shortest solution for each colour", "ทางที่สั้นที่สุด": "Shortest solution", "นับว่ากี่ครั้งที่ทำได้ต่ำกว่าเวลานี้": "Counts how many solves are faster than this", "การจัดภาพ": "Fit", "เต็มจอจะตัดขอบ พอดีจะเห็นทั้งภาพ": "Fill crops the edges, Fit shows the whole picture", "ความสว่างพื้นหลัง": "Background brightness", "ลดลงถ้าพื้นหลังแย่งสายตา": "Lower it if the background is distracting", "ความเบลอกระจก": "Glass blur", "เบลอพื้นหลังที่อยู่ใต้การ์ด": "Blurs the background behind the cards", "สีฉากตามธีม": "Scene colours follow theme", "ปิดเพื่อเลือกสีของฉากเองอิสระ": "Turn off to pick the scene colours yourself", "อ่านข้อมูลไม่ได้ ตรวจว่าวาง JSON ครบทั้งก้อน": "Couldn't read that. Make sure you pasted the whole JSON", "จำนวนครั้งในเซสชัน": "Solves in session", "อยากจับให้ครบกี่ครั้ง": "How many solves you want to do", "ยังไม่ได้เลือกเคส ถ้าปิดตอนนี้จะสุ่มจากทั้ง": "No cases selected. If you close now, it picks from all", "ชุดสีสำเร็จรูป": "Ready-made palettes", "กดเพื่อใช้ แล้วแก้ต่อได้": "Click to use, then edit", "สแครมเบิล CFOP · กดทุกครั้งที่จบแต่ละช่วง": "CFOP scramble · press at the end of each stage", "แตะจอเพื่อหยุด": "Tap to stop", "กดปุ่มใดก็ได้เพื่อหยุด": "Press any key to stop", "12 ครั้งล่าสุด · แยกช่วง": "Last 12 · by stage", "12 ครั้งล่าสุด": "Last 12 solves", "ถือสีเหลืองไว้ด้านบน สีเขียวหันเข้าหาตัว": "Yellow on top, green facing you", "รูปแบบการไล่": "Gradient style", "เมชจะขยับไหลไปมาแบบนุ่มๆ": "Mesh flows around softly", "สไตล์ตัวเลข": "Digit style", "หน้าตาของตัวเลขใหญ่กลางจอ": "How the big time in the middle looks", "เบลอภาพ": "Blur", "ช่วยให้ตัวหนังสืออ่านง่ายขึ้น": "Makes text easier to read", "เปลี่ยนสีทั้งหน้า รวมถึงสีของฉากพื้นหลัง": "Changes the colours of the whole page, including the background scene", "เป้า ao5 (วินาที)": "ao5 goal (seconds)", "ao5 ที่อยากทำให้ได้": "The ao5 you're aiming for", "ความทึบของการ์ด": "Card opacity", "ใช้กับสไตล์กระจก ต่ำ = มองทะลุมากขึ้น": "For the Glass style. Lower = more see-through", "สีของฉัน": "My colours", "เลือกสองสีเอง ใช้กับพื้นมืด": "Pick two colours, used on a dark base", "แยกตามช่วง · 12 ครั้งล่าสุด": "By stage · last 12", "บันได Sub-X": "Sub-X ladder", "ความมนของมุม": "Corner radius", "มุมเหลี่ยมหรือโค้งมน": "Square or rounded corners", "ไฟล์ใหญ่เกิน 200 MB ลองย่อขนาดก่อนนะ": "The file is over 200 MB. Try making it smaller first", "จับเวลาอย่างน้อย 2 ครั้งเพื่อดูกราฟ": "Do at least 2 solves to see the chart", "ขนาดตัวเลข": "Timer size", "ขนาดตัวจับเวลากลางจอ": "Size of the time in the middle", "ตำแหน่งแนวตั้ง": "Vertical position", "เลื่อนภาพขึ้น–ลง": "Move the picture up or down", "ตำแหน่งแนวนอน": "Horizontal position", "เลื่อนภาพซ้าย–ขวา": "Move the picture left or right", "ยังไม่มีเวลา ลองจับเวลาครั้งแรกเลย": "No times yet. Do your first solve", "แตะค้างที่นี่": "Touch and hold here", "กด Space ค้างไว้": "Hold Space", "กราฟแท่งแยกตามช่วง 12 ครั้งล่าสุด": "Stacked bars by stage, last 12 solves", "คัดลอกไม่ได้ ลองเลือกข้อความเองนะ": "Couldn't copy. Try selecting the text yourself", "สีของฉาก": "Scene colours", "สองสีหลักที่ใช้วาดฉาก": "The two main colours used to draw the scene", "หมุนทั้งลูก": "rotate", "ใช้ได้เฉพาะไฟล์รูปภาพหรือวิดีโอ": "Only image or video files work", "ความหนาแน่น": "Density", "จำนวนอนุภาคบนจอ": "How many particles are on screen", "ถือสีขาวบน สีเขียวหันเข้าหาตัว": "White on top, green facing you", "สีพื้นหลัง": "Background colour", "เลือกสีอะไรก็ได้": "Any colour you like", "มินิมอล": "Minimal", "เหลือแค่ตัวจับเวลา": "Just the timer", "สลับข้าง": "Mirrored", "รายการเวลาอยู่ขวา": "Times list on the right", "เปลี่ยนหน้าตาแผงทั้งหมดในหน้า": "Changes the look of every panel", "จัดวางหน้าจอและการแสดงตัวเลข": "Screen arrangement and how the time is shown", "สีที่ใช้ไล่": "Gradient colours", "ใส่ได้ 2–4 สี": "2–4 colours", "เกิน 15 วินาที · โดน +2 แล้ว": "Over 15 seconds · +2 applied", "แผงครบ 3 คอลัมน์": "All panels in 3 columns", "ไวด์": "Wide", "ตัวเลขเต็มความกว้าง": "Full-width timer", "กราฟเวลา · 50 ครั้งล่าสุด": "Times · last 50", "ดาวเคราะห์ ตัวเลขเรืองแสง": "Planet, glowing digits", "ภาพเคส F2L มุมมองหน้า-ขวา": "F2L case, front-right view", "มุม": "Angle", "ทิศทางของการไล่สี": "Direction of the gradient", "กราฟแท่ง 12 ครั้งล่าสุด": "Bar chart of the last 12 solves", "ซินธ์เวฟ ตัวเลขขอบเรือง": "Synthwave, glowing outline digits", "ยังไม่มีเวลาแบบแยกช่วง": "No split times yet", "ลูกบิด 3 มิติลอยเต็มจอ": "3D cubes floating everywhere", "หรือลากไฟล์มาวางตรงนี้": "or drop a file here", "พาสเทล กลีบซากุระร่วง": "Pastel, falling sakura petals", "ยังไม่มีเวลาให้คัดลอก": "No times to copy yet", "รังผึ้งนีออน หิ่งห้อย": "Neon honeycomb, fireflies", "เปิดแอนิเมชันพื้นหลัง": "Turn on background animation", "คลื่นทะเล ฟองสบู่ลอย": "Ocean waves, floating bubbles", "ตั้งเป็นพื้นหลังแล้ว": "Set as background", "ภาพลูกบาศก์แบบกางออก": "Unfolded cube net", "เซสชันนี้ยังว่างอยู่": "This session is empty", "เป้าหมายและค่าเฉลี่ย": "Goals and averages", "ซ่อนเฉลย": "Hide answer", "ดูเฉลย": "Show answer", "หน้าตาหลังสแครมเบิล": "After the scramble", "แล้วปล่อยเพื่อเริ่ม": "then release to start", "ภาพเคสมองจากด้านบน": "Case seen from the top", "รูป / GIF / วิดีโอ": "Image / GIF / video", "เสียงเตือน 8/12 วิ": "8/12 s alerts", "ของเวลา": "of time", "คิดจาก": "from", "ความเร็วแอนิเมชัน": "Animation speed", "จับเวลา ค่าเฉลี่ย": "Timer average", "ปรับผลครั้งล่าสุด": "Adjust the last solve", "วิดีโอ": "video", "รูปภาพ": "image", "หน้าตาหลังเซ็ตอัป": "After the setup", "แสงเหนือ หิมะโปรย": "Northern lights, falling snow", "กดเมื่อจบช่วงนี้": "press when this stage is done", "กราฟเวลาย้อนหลัง": "Times chart", "คัดลอกข้อมูลแล้ว": "Data copied", "ดาวเคราะห์วงแหวน": "Ringed planet", "นำเข้าข้อมูลแล้ว": "Data imported", "ฟ้ายามเย็น ฝนพรำ": "Evening sky, light rain", "สายฝนโน้ตท่าหมุน": "Move-notation rain", "ใช้เวลามากสุดคือ": "Slowest stage:", "คัดลอกสถิติแล้ว": "Stats copied", "นำเข้าและแทนที่": "Import and replace", "ปล่อยเพื่อเริ่ม!": "Release to start!", "ปล่อยเพื่อเริ่ม": "Release to start", "ฟอนต์ตัวหนังสือ": "Text font", "รูปจากคลิปบอร์ด": "Pasted image", "เส้นชั้นความสูง": "Contour lines", "กลับไปหยุดนิ่ง": "Pause it again", "ความเร็ววิดีโอ": "Video speed", "ซูม": "Zoom", "ขยายภาพ": "Enlarge the picture", "ฟอนต์และตัวเลข": "Fonts & digits", "เป้าหมายเซสชัน": "Session goals", "ฉากเคลื่อนไหว": "Animated scene", "ฝนโน้ตท่าหมุน": "Notation rain", "สลับทั้งกลุ่ม": "Toggle group", "เปลี่ยนสีวนไป": "Colour cycle", "เสร็จอยู่แล้ว": "already solved", "ดีสุด · เป้า": "best · goal", "ตรวจดู 15 วิ": "15 s inspection", "ยังไม่มีเวลา": "No times yet", "รังผึ้งนีออน": "Neon honeycomb", "ลุคสำเร็จรูป": "Ready-made looks", "สว่าง สบายตา": "Bright and easy on the eyes", "สแครมเบิลฝึก": "Training scramble:", "หันเข้าหาตัว": " facing you", "เลือกทั้งหมด": "Select all", "กดเพื่อหยุด": "press to stop", "กำลังตรวจดู": "Inspecting", "ครั้งล่าสุด": "latest", "คัดลอกสถิติ": "Copy stats", "ช่วงสุดท้าย": "Last stage", "ฟอนต์ตัวเลข": "Timer font", "ยังไม่เคยทำ": "not done yet", "ลอยตามเมาส์": "Follow mouse", "วาร์ปดวงดาว": "Star warp", "เลือกรูปภาพ / GIF": "Choose image / GIF", "เลือกวิดีโอ": "Choose video", "เอฟเฟกต์ลอย": "Floating effects", "แพนซ้าย-ขวา": "Pan", "ไม่เลือกเลย": "Select none", "กลีบซากุระ": "Sakura petals", "คัดลอกแล้ว": "Copied", "จำนวนครั้ง": "Solves", "รายการเวลา": "Times list", "ลูกบิดร่วง": "Falling cubes", "ล้างเซสชัน": "Clear session", "สไตล์การ์ด": "Card style", "เคสที่แล้ว": "Last case", "เซ็ตอัปเคส": "Case setup", "คลื่นทะเล": "Ocean waves", "ค่าเฉลี่ย": "Averages", "ดีสุดใหม่!": " — new best!", "PB ใหม่!": "New PB!", "ตอนนี้ใช้": "Now using", "ลูกบิดลอย": "Floating cubes", "สแครมเบิล": "Scramble", "เลย์เอาต์": "Layout", "เลือกโหมด": "Choose mode", "แสงออโรรา": "Aurora", "กาแล็กซี": "Galaxy", "ขอบเรือง": "Glow outline", "ครั้งที่ ": "Solve #", "ครั้งที่": "Solve #", "จะลบทั้ง": "This deletes all", "ซินธ์เวฟ": "Synthwave", "ดาวระยิบ": "Twinkling stars", "ดีที่สุด": "Best", "ตัวอย่าง": "sample", "พื้นหลัง": "Background", "ลบสีท้าย": "Remove last", "ล้างเวลา": "Clear all", "สถิติย่อ": "Quick stats", "สุ่มใหม่": "New scramble", "หยุดนิ่ง": "paused", "หิ่งห้อย": "Fireflies", "เป้าหมาย": "Goals", "เรืองแสง": "Neon glow", "เร็วขึ้น": "faster by", "เลือกเคส": "Cases", "เลือกไว้": "Selected", "เวลาจริง": "raw time", "ไล่สีเอง": "Gradient", "คลาสสิก": "Classic", "ความยาว": "Length", "ค้างไว้…": "Hold…", "ค้างไว้": "Hold", "ซันเซ็ต": "Sunset", "ซูมช้าๆ": "Slow zoom", "ต่ำกว่า": "Under", "ทั้งหมด": "times", "ฟองสบู่": "Bubbles", "ล้างเลย": "Clear", "สตูดิโอ": "Studio", "สีแนะนำ": "Suggested colours", "เนบิวลา": "Nebula", "+ เพิ่มสี": "+ Add colour", "เพิ่มสี": "Add colour", "เวลารวม": "Total time", "เส้นขอบ": "Outline", "เส้นตรง": "Linear", "แก้เป้า": "Edit goals", "แยกช่วง": "Splits", "โหมดฝึก CFOP": "CFOP training modes", "โอเชียน": "Ocean", "ไว้ล่าง": " on the bottom,", "ข้อมูล": "Data", "คัดลอก JSON": "Copy JSON", "คัดลอก": "Copy", "ซากุระ": "Sakura", "ตอนนี้": "Now", "ยกเลิก": "Cancel", "รีเซ็ต": "Reset", "วินาที": "seconds", "สีพื้น": "Solid colour", "สีหลัก": "Main", "ออโรรา": "Aurora", "เซสชัน": "Session", "เต็มจอ": "Fill", "เรียบๆ": "Simple", "เหลือง": "yellow", "เอาออก": "Remove", "ใช้ลุค": "Applied look", "กระจก": "Glass", "กลุ่ม": "Group", "ครั้ง": "solves", "ชุดสี": "Palette", "ดีสุด": "Best", "ทุกสี": "Any", "นีออน": "Neon", "มัทฉะ": "Matcha", "วงกลม": "Radial", "สายฝน": "Rain", "สีธีม": "Theme colours", "สีรอง": "Second", "หายใจ": "Breathe", "เรียบ": "Plain", "เสร็จ": "Done", "ไม่มี": "None", "ไล่สี": "Gradient", "ช่วง": "stages", "ซ่อน": "Hide", "นิ่ง": "Still", "ปกติ": "normal", "พอดี": "Fit", "สุ่ม": "Any", "หิมะ": "Snow", "เวลา": "Time", "แล้ว": "", "ใหม่": "new", "ขาว": "white", "จับ": "Track", "จาก": "of", "ถือ": "Hold ", "ทึบ": "Solid", "ท่า": "moves", "ยืด": "Stretch", "ลอย": "Floating", "เคส": "cases", "เมช": "Mesh", "ลบ": "Delete", "วิ": "s", "สี": "Colour", "เขียว": "green", "น้ำเงิน": "blue", "แดง": "red", "ส้ม": "orange", "เลือกเคส F2L": "Choose F2L cases", "เลือกเคส OLL": "Choose OLL cases", "เลือกเคส PLL": "Choose PLL cases", "เลือกไฟล์ หรือลากมาวางตรงนี้": "Choose a file or drop it here", "ดูทุกสี": "All colours", "8 วินาที!": "8 seconds!", "12 วินาที!": "12 seconds!", "เปิดอยู่": "On", "ปิดอยู่": "Off", "ปิด": "Close", "เซ็ตอัป": "Setup", "0 = หยุดนิ่ง": "0 = paused", "100% = ปกติ": "100% = normal"};
+  const EN_KEYS = Object.keys(EN).sort((a, b) => b.length - a.length);
+  const HAS_TH = /[฀-๿]/;
+  const toEN = s => { for (const k of EN_KEYS) if (s.indexOf(k) >= 0) s = s.split(k).join(EN[k]); return s; };
+  const trText = s => (state.lang !== 'en' || !s || !HAS_TH.test(s)) ? s : toEN(s);
+  const ORIG = new WeakMap(), TR_ATTRS = ['aria-label', 'title', 'placeholder'];
+  function trAttr(el, a) { const v = el.getAttribute(a); if (v && HAS_TH.test(v) && !el.closest('[data-notr]')) { const e = toEN(v); if (e !== v) { el.setAttribute('data-th-' + a, v); el.setAttribute(a, e); } } }
+  function trNode(n) {
+    if (n.nodeType === 3) { const v = n.nodeValue; if (HAS_TH.test(v) && !(n.parentElement && n.parentElement.closest('[data-notr]'))) { const e = toEN(v); if (e !== v) { ORIG.set(n, [v, e]); n.nodeValue = e; } } return; }
+    if (n.nodeType !== 1 || n.tagName === 'SCRIPT' || n.tagName === 'STYLE' || n.hasAttribute('data-notr')) return;
+    for (const a of TR_ATTRS) trAttr(n, a);
+    for (const c of n.childNodes) trNode(c);
+  }
+  function untrNode(n) {
+    if (n.nodeType === 3) { const o = ORIG.get(n); if (o && n.nodeValue === o[1]) n.nodeValue = o[0]; return; }
+    if (n.nodeType !== 1) return;
+    for (const a of TR_ATTRS) { const v = n.getAttribute('data-th-' + a); if (v) { n.setAttribute(a, v); n.removeAttribute('data-th-' + a); } }
+    for (const c of n.childNodes) untrNode(c);
+  }
+  new MutationObserver(ms => {
+    if (state.lang !== 'en') return;
+    for (const m of ms) {
+      if (m.type === 'characterData') trNode(m.target);
+      else if (m.type === 'attributes') trAttr(m.target, m.attributeName);
+      else m.addedNodes.forEach(trNode);
+    }
+  }).observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: TR_ATTRS });
+  function applyLang() {
+    document.documentElement.lang = state.lang;
+    if (state.lang === 'en') trNode(document.body); else untrNode(document.body);
+    $('#langBtn').textContent = state.lang === 'en' ? 'ไทย' : 'EN';
+    $('#langBtn').setAttribute('aria-label', state.lang === 'en' ? 'Switch to Thai' : 'Switch to English');
+  }
+  $('#langBtn').addEventListener('click', () => {
+    state.lang = state.lang === 'en' ? 'th' : 'en'; save();
+    applyLang(); renderTop(); renderScramble(); renderSession(); paint();
+    if (!modalEl.hidden && sheet.dataset.kind === 'studio') rerenderStudio();
   });
 
   /* ---------- boot ---------- */
+  applyLang();
   applyUI();
   resizeBg();
   renderTop();
@@ -2251,6 +2362,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   renderSession();
   paint();
   requestAnimationFrame(bgLoop);
+  if (calm()) setTimeout(() => toast('พื้นหลังหยุดนิ่งเพราะเครื่องตั้งค่าลดภาพเคลื่อนไหว เปิดได้ที่ สตูดิโอ → พื้นหลัง'), 1200);
   mediaGet().then(rec => { if (rec && rec.blob) { showMedia(rec.blob, rec.name); applyUI(); } }).catch(() => {});
 })();
 </script>
