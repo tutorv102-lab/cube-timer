@@ -20,6 +20,12 @@ A Rubik's cube timer with a full CFOP training mode, split timing, detailed stat
 - **OLL (57) and PLL (21) trainers** – case setups with random AUF, a case picker, and per-case average times
 - Every algorithm was checked with a sticker-level cube simulator
 
+### Algorithm library
+- Every CFOP case in one place: F2L (41), OLL (57) and PLL (21), with case pictures, one-tap copy and a **Practise** button that drills just that case
+
+### Phone layout
+- On phones the app switches to separate pages with a bottom tab bar: Timer, Times, Stats, Algorithms, Sessions and Settings
+
 ### Stats
 - Single, mean, mo3, ao5, ao12, ao25, ao50 and ao100 (current and best, WCA trimming)
 - Session goals, a sub-X ladder, a last-12 bar chart and a 50-solve trend chart
