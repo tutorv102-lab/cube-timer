@@ -25,6 +25,9 @@ A Rubik's cube timer with a full CFOP training mode, split timing, detailed stat
 - Session goals, a sub-X ladder, a last-12 bar chart and a 50-solve trend chart
 - Separate sessions for every puzzle and training mode
 
+### Languages
+- Thai and English: switch with the EN / ไทย button in the header. The first visit picks the language from your browser
+
 ### Customization (✦ Studio)
 - 10 ready-made looks
 - Background: 12 animated canvas scenes, your own gradient, a solid colour, or your own image / GIF / video (with Ken Burns, pan, mouse-parallax, breathe and hue animations)
@@ -34,7 +37,14 @@ A Rubik's cube timer with a full CFOP training mode, split timing, detailed stat
 
 ## Tech
 - A single self-contained `index.html`: vanilla JavaScript, Canvas 2D and SVG, with no build step and no dependencies
+- `manifest.webmanifest` and a service worker (`sw.js`) make it installable and usable offline
 - Times and settings are saved in `localStorage`, and uploaded background files in IndexedDB. Everything stays in your own browser.
+
+## Install as an app
+Cube Timer is a Progressive Web App: it can be installed to your home screen and works offline.
+- **Android (Chrome):** tap **Install app** in the header, or ⋮ → **Add to Home screen / Install app**
+- **iPhone / iPad (Safari):** tap Share → **Add to Home Screen**
+- **Desktop (Chrome / Edge):** click the install icon in the address bar
 
 ## Run locally
 Open `index.html` in any modern browser.
