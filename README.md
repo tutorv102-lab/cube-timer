@@ -23,6 +23,9 @@ A Rubik's cube timer with a full CFOP training mode, split timing, detailed stat
 ### Algorithm library
 - Every CFOP case in one place: F2L (41), OLL (57) and PLL (21), with case pictures, one-tap copy and a **Practise** button that drills just that case
 
+### 3D viewer
+- Watch any algorithm, scramble or optimal cross solution turn on an animated 3D cube: play, pause, step forward and back, change speed and drag to look around
+
 ### Phone layout
 - On phones the app switches to separate pages with a bottom tab bar: Timer, Times, Stats, Algorithms, Sessions and Settings
 

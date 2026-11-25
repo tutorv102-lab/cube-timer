@@ -1,5 +1,5 @@
 // Cube Timer service worker: works offline and still picks up new versions when online.
-const CACHE = 'cube-timer-v2';
+const CACHE = 'cube-timer-v3';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

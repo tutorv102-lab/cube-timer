@@ -536,6 +536,100 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   body.m .toast{bottom:calc(96px + env(safe-area-inset-bottom));max-width:calc(100% - 32px)}
 }
 
+/* ---------- 3D viewer ---------- */
+.sheet.v3d{width:min(560px,100%);gap:10px}
+.vhead{display:flex;align-items:flex-start;gap:12px}
+.vhead > div{flex:1;min-width:0}
+.vhead p{font-size:13px;margin-top:2px;font-family:var(--f-ui)}
+.vwrap{position:relative;width:min(100%,420px);aspect-ratio:1;margin:0 auto;border-radius:18px;background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 70%)}
+#v3c{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#v3c:active{cursor:grabbing}
+.vhint{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:12px;color:var(--muted);pointer-events:none}
+.vmoves{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.vm{font:600 16px var(--f-mono);min-width:2.4em;padding:4px 8px;border-radius:9px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);cursor:pointer}
+.vm.done{opacity:.38}
+.vm.cur{background:linear-gradient(110deg,var(--accent),var(--accent-2));color:var(--ink);border-color:transparent;opacity:1}
+.vctl{display:flex;justify-content:center;align-items:center;gap:12px}
+.vbtn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--panel-2);color:var(--text);display:grid;place-items:center;cursor:pointer}
+.vbtn svg{width:20px;height:20px;fill:currentColor}
+.vbtn.big{width:60px;height:60px;background:linear-gradient(110deg,var(--accent),var(--accent-2));color:var(--ink);border-color:transparent}
+.vbtn.big svg{width:24px;height:24px}
+.vfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font:600 13px var(--f-ui);color:var(--muted)}
+.b3{cursor:pointer}
+.b3 .v3tag{font:700 11px var(--f-num);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:6px;padding:1px 6px}
+.xrow .xv{grid-column:2 / -1;justify-self:start;padding:3px 10px;font-size:12.5px;margin-bottom:6px}
+.reveal .v3b{margin-top:6px;padding:4px 12px;font-size:13px}
+
+/* ---------- phone layout: readability pass ---------- */
+@media (max-width:760px){
+  body.m .app .glass,body.m .mcard,body.m .mse,body.m .mbig,body.m .algc,body.m .mst,body.m .mpill{background:color-mix(in srgb,var(--panel-base) 95%,var(--bg));-webkit-backdrop-filter:none;backdrop-filter:none}
+  body.m:not([data-tab="timer"]) #bg,body.m:not([data-tab="timer"]) #ov,body.m:not([data-tab="timer"]) #bgMedia{opacity:.18}
+  body.m .app{gap:14px}
+  /* tab bar with labels */
+  body.m #mTabs{height:70px;left:10px;right:10px;padding:0 4px;background:color-mix(in srgb,var(--panel-base) 96%,var(--bg))}
+  #mTabs button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;flex:1;min-width:0}
+  #mTabs svg{width:23px;height:23px}
+  #mTabs span{font:600 10.5px/1 var(--f-ui);white-space:nowrap}
+  #mTabs button[aria-current="true"]{color:var(--accent)}
+  #mTabs button[aria-current="true"]::after{left:30%;right:30%;bottom:-1px}
+  /* timer page */
+  body.m[data-tab="timer"] .app{grid-template-rows:auto auto minmax(0,1fr) auto auto;grid-template-areas:"mtop mtop" "scr scr" "zone zone" "pen pen" "net mst";gap:12px;padding-bottom:calc(98px + env(safe-area-inset-bottom))}
+  body.m[data-tab="timer"] .app .scr{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:20px;max-height:44vh;overflow-y:auto}
+  body.m .scr .moves{order:1;gap:6px 12px}
+  body.m .scr .scr-head{order:2;justify-content:center;gap:8px}
+  body.m .scr .reveal{order:3}
+  body.m .scr .train-note{display:none}
+  body.m .scr-actions{justify-content:center}
+  body.m .scr-actions .btn{padding:7px 14px;font-size:13.5px;border-radius:10px}
+  body.m .mv{font-size:var(--mv-size,21px)}
+  body.m .modectl{justify-content:center;width:100%}
+  body.m .reveal{padding:10px;gap:12px}
+  body.m .reveal svg{width:72px;height:72px}
+  body.m .reveal .alg{font-size:14px}
+  body.m .time{text-shadow:0 0 24px color-mix(in srgb,var(--bg) 70%,transparent)}
+  body.m .hint{font-size:14px;opacity:.9;padding:4px 12px;border-radius:99px;background:color-mix(in srgb,var(--bg) 55%,transparent)}
+  body.m .lastcase,body.m .stages{background:color-mix(in srgb,var(--bg) 60%,transparent);border-radius:12px;padding:4px 10px}
+  body.m[data-tab="timer"] .app .statrow{background:none;box-shadow:none;padding:0;min-height:38px}
+  body.m .penbar{gap:8px}
+  body.m .penbar button{background:color-mix(in srgb,var(--panel-base) 95%,var(--bg));color:var(--text);padding:8px 18px;font-size:14px;border:1px solid var(--line)}
+  body.m .penbar button.del{color:var(--stop)}
+  body.m .penbar button[aria-pressed="true"]{background:linear-gradient(110deg,var(--accent),var(--accent-2));color:var(--ink);border-color:transparent}
+  body.m[data-tab="timer"] .b3{height:132px;padding:10px;position:relative}
+  body.m[data-tab="timer"] .b3::after{content:"3D";position:absolute;right:9px;bottom:7px;font:700 11px var(--f-num);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:6px;padding:1px 6px}
+  body.m .mst{padding:12px 8px}
+  body.m .mst b{font-size:20px}
+  /* stats page */
+  body.m .right > .card:nth-child(2){display:none}
+  .msp{grid-auto-rows:auto}
+  .mcard .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .mcard.hl .sub{color:var(--ink);opacity:.8}
+  .mcard.full{grid-column:1 / -1}
+  table.mavg{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;margin-top:6px}
+  table.mavg th{font:700 12px var(--f-ui);color:var(--muted);text-align:right;padding:4px 2px;text-transform:uppercase}
+  table.mavg th:first-child{text-align:left}
+  table.mavg td{font:700 19px var(--f-num);text-align:right;padding:7px 2px;border-top:1px solid var(--line)}
+  table.mavg td:first-child{text-align:left;font:700 14px var(--f-ui);color:var(--muted)}
+  table.mavg td.b{color:var(--accent)}
+  .five{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .five span{font:700 16px var(--f-num);padding:6px 10px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line)}
+  .five span.tr{color:var(--muted);text-decoration:line-through;opacity:.75}
+  /* algorithm page */
+  body.m .algc{grid-template-columns:58px 1fr;padding:10px}
+  body.m .algc svg{width:58px;height:58px}
+  body.m .algc code{font-size:14.5px}
+  body.m .algc .alga .btn{padding:6px 12px;font-size:13px}
+  body.m .mcard.hl{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--ink)}
+  body.m[data-tab="timer"] .app{overflow-y:auto}
+  body.m[data-tab="timer"] .zone{min-height:210px}
+  body.m #copyScr{display:none}
+  body.m .scr .reveal{flex-direction:row;align-items:center}
+  body.m .scr .reveal > div{min-width:0}
+  body.m .scr .reveal.xr{flex-direction:column;align-items:stretch}
+  /* 3D viewer full screen */
+  body.m .sheet.v3d{padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));justify-content:center}
+  body.m .vwrap{width:min(100%,46vh)}
+}
+
 @media (max-width:1180px){ .app{grid-template-columns:250px minmax(0,1fr) 280px} }
 @media (max-width:980px){
   html,body{height:auto}
@@ -699,19 +793,19 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   <div id="mSessions"></div>
   <div id="mSettings"></div>
   <section class="b3 card glass">
-    <div class="card-head"><span class="label"><svg class="ic" style="--ic:var(--c-o)"><use href="#i-cube"/></svg><span id="netLabel">หน้าตาหลังสแครมเบิล</span></span></div>
+    <div class="card-head"><span class="label"><svg class="ic" style="--ic:var(--c-o)"><use href="#i-cube"/></svg><span id="netLabel">หน้าตาหลังสแครมเบิล</span></span><span class="v3tag">3D</span></div>
     <div class="body" id="net"></div>
     <div class="tiny" id="netTip"></div>
   </section>
 </div>
 
 <nav id="mTabs" aria-label="เมนูหลัก">
-  <button type="button" data-tab="timer" aria-label="จับเวลา"><svg><use href="#i-stopwatch"/></svg></button>
-  <button type="button" data-tab="times" aria-label="เวลาทั้งหมด"><svg><use href="#i-hourglass"/></svg></button>
-  <button type="button" data-tab="stats" aria-label="สถิติ"><svg><use href="#i-pie"/></svg></button>
-  <button type="button" data-tab="algs" aria-label="สูตร CFOP"><svg><use href="#i-book"/></svg></button>
-  <button type="button" data-tab="sessions" aria-label="เซสชันทั้งหมด"><svg><use href="#i-stack"/></svg></button>
-  <button type="button" data-tab="settings" aria-label="ตั้งค่า"><svg><use href="#i-gear"/></svg></button>
+  <button type="button" data-tab="timer" aria-label="จับเวลา"><svg><use href="#i-stopwatch"/></svg><span>จับเวลา</span></button>
+  <button type="button" data-tab="times" aria-label="เวลาทั้งหมด"><svg><use href="#i-hourglass"/></svg><span>เวลา</span></button>
+  <button type="button" data-tab="stats" aria-label="สถิติ"><svg><use href="#i-pie"/></svg><span>สถิติ</span></button>
+  <button type="button" data-tab="algs" aria-label="สูตร CFOP"><svg><use href="#i-book"/></svg><span>สูตร</span></button>
+  <button type="button" data-tab="sessions" aria-label="เซสชันทั้งหมด"><svg><use href="#i-stack"/></svg><span>เซสชัน</span></button>
+  <button type="button" data-tab="settings" aria-label="ตั้งค่า"><svg><use href="#i-gear"/></svg><span>ตั้งค่า</span></button>
 </nav>
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status"></div>
@@ -720,7 +814,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
 (() => {
   /* ---------- data ---------- */
   // [case id, algorithm as cubers write it, setup = inverse of the algorithm in plain face turns] — verified by simulation
-  const CASE_DATA = {"PLL":[["Aa","x R' U R' D2 R U' R' D2 R2 x'","R2 B2 R F R' B2 R F' R"],["Ab","x R2 D2 R U R' D2 R U' R x'","R' F R' B2 R F' R' B2 R2"],["E","x' R U' R' D R U R' D' R U R' D R U' R' D' x","F R B R' F' R B' R' F R B' R' F' R B R'"],["F","R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R","R' U' R U' R' U R U R2 F' R U R U' R' F U R"],["Ga","R2 U R' U R' U' R U' R2 U' D R' U R D'","D R' U' R D' U R2 U R' U R U' R U' R2"],["Gb","R' U' R U D' R2 U R' U R U' R U' R2 D","D' R2 U R' U R' U' R U' R2 D U' R' U R"],["Gc","R2 U' R U' R U R' U R2 U D' R U' R' D","D' R U R' D U' R2 U' R U' R' U R' U R2"],["Gd","R U R' U' D R2 U' R U' R' U R' U R2 D'","D R2 U' R U' R U R' U R2 D' U R U' R'"],["H","M2 U M2 U2 M2 U M2","R2 L2 D' R2 L2 U2 R2 L2 D' R2 L2"],["Ja","x R2 F R F' R U2 r' U r U2 x'","F2 L' U' L F2 R' D R' D' R2"],["Jb","R U R' F' R U R' U' R' F R2 U' R'","R U R2 F' R U R U' R' F R U' R'"],["Na","R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'","R U R' U2 R U R2 F' R U R U' R' F R U' R' U' R U' R'"],["Nb","R' U R U' R' F' U' F R U R' F R' F' R U' R","R' U R' F R F' R U' R' F' U F R U R' U' R"],["Ra","R U' R' U' R U R D R' U' R D' R' U2 R'","R U2 R D R' U R D' R' U' R' U R U R'"],["Rb","R2 F R U R U' R' F' R U2 R' U2 R","R' U2 R U2 R' F R U R' U' R' F' R2"],["T","R U R' U' R' F R2 U' R' U' R U R' F'","F R U' R' U R U R2 F' R U R U' R'"],["Ua","M2 U M U2 M' U M2","R2 L2 D' R L' F2 R' L D' R2 L2"],["Ub","M2 U' M U2 M' U' M2","R2 L2 D R L' F2 R' L D R2 L2"],["V","R' U R' U' y R' F' R2 U' R' U R' F R F","F' R' F' R U' R U R2 F R U F U' F"],["Y","F R U' R' U' R U R' F' R U R' U' R' F R F'","F R' F' R U R U' R' F R U' R' U R U R' F'"],["Z","M' U M2 U M2 U M' U2 M2","R2 L2 D2 R L' F' R2 L2 B' R2 L2 F' R L'"]],"OLL":[["1","R U2 R2 F R F' U2 R' F R F'","F R' F' R U2 F R' F' R2 U2 R'"],["2","F R U R' U' F' f R U R' U' f'","B L U L' U' B' F U R U' R' F'"],["3","f R U R' U' f' U' F R U R' U' F'","F U R U' R' F' U B L U L' U' B'"],["4","f R U R' U' f' U F R U R' U' F'","F U R U' R' F' U' B L U L' U' B'"],["5","r' U2 R U R' U r","L' B' R B' R' B2 L"],["6","r U2 R' U' R U' r'","L F R' F R F2 L'"],["7","r U R' U R U2 r'","L F2 R' F' R F' L'"],["8","l' U' L U' L' U2 l","R' F2 L F L' F R"],["9","R U R' U' R' F R2 U R' U' F'","F U R U' R2 F' R U R U' R'"],["10","R U R' U R' F R F' R U2 R'","R U2 R' F R' F' R U' R U' R'"],["11","r U R' U R' F R F' R U2 r'","L F2 R' D R' D' R F' R F' L'"],["12","M' R' U' R U' R' U2 R U' R r'","L R' F R' F2 R F R' F R2 L'"],["13","F U R U' R2 F' R U R U' R'","R U R' U' R' F R2 U R' U' F'"],["14","R' F R U R' F' R F U' F'","F U F' R' F R U' R' F' R"],["15","r' U' r R' U' R U r' U r","L' B' L U' R' U R L' B L"],["16","r U r' R U R' U' r U' r'","L F L' U R U' R' L F' L'"],["17","R U R' U R' F R F' U2 R' F R F'","F R' F' R U2 F R' F' R U' R U' R'"],["18","r U R' U R U2 r2 U' R U' R' U2 r","L' B2 R B R' B L2 F2 R' F' R F' L'"],["19","r' R U R U R' U' M' R' F R F'","F R' F' R2 L' B R B' R' B' R' L"],["20","r U R' U' M2 U R U' R' U' M'","R L' B R B R' B' R2 L2 F R F' L'"],["21","R U2 R' U' R U R' U' R U' R'","R U R' U R U' R' U R U2 R'"],["22","R U2 R2 U' R2 U' R2 U2 R","R' U2 R2 U R2 U R2 U2 R'"],["23","R2 D' R U2 R' D R U2 R","R' U2 R' D' R U2 R' D R2"],["24","r U R' U' r' F R F'","F R' F' L F R F' L'"],["25","F' r U R' U' r' F R","R' F' L F R F' L' F"],["26","R U2 R' U' R U' R'","R U R' U R U2 R'"],["27","R U R' U R U2 R'","R U2 R' U' R U' R'"],["28","r U R' U' M U R U' R'","R U R' U' R' L F R F' L'"],["29","R U R' U' R U' R' F' U' F R U R'","R U' R' F' U F R U R' U R U' R'"],["30","F R' F R2 U' R' U' R U R' F2","F2 R U' R' U R U R2 F' R F'"],["31","R' U' F U R U' R' F' R","R' F R U R' U' F' U R"],["32","L U F' U' L' U L F L'","L F' L' U' L U F U' L'"],["33","R U R' U' R' F R F'","F R' F' R U R U' R'"],["34","R U R2 U' R' F R U R U' F'","F U R' U' R' F' R U R2 U' R'"],["35","R U2 R2 F R F' R U2 R'","R U2 R' F R' F' R2 U2 R'"],["36","L' U' L U' L' U L U L F' L' F","F' L F L' U' L' U' L U L' U L"],["37","F R' F' R U R U' R'","R U R' U' R' F R F'"],["38","R U R' U R U' R' U' R' F R F'","F R' F' R U R U R' U' R U' R'"],["39","L F' L' U' L U F U' L'","L U F' U' L' U L F L'"],["40","R' F R U R' U' F' U R","R' U' F U R U' R' F' R"],["41","R U R' U R U2 R' F R U R' U' F'","F U R U' R' F' R U2 R' U' R U' R'"],["42","R' U' R U' R' U2 R F R U R' U' F'","F U R U' R' F' R' U2 R U R' U R"],["43","F' U' L' U L F","F' L' U' L U F"],["44","F U R U' R' F'","F R U R' U' F'"],["45","F R U R' U' F'","F U R U' R' F'"],["46","R' U' R' F R F' U R","R' U' F R' F' R U R"],["47","R' U' R' F R F' R' F R F' U R","R' U' F R' F' R F R' F' R U R"],["48","F R U R' U' R U R' U' F'","F U R U' R' U R U' R' F'"],["49","r U' r2 U r2 U r2 U' r","L' B L2 F' L2 B' L2 F L'"],["50","r' U r2 U' r2 U' r2 U r'","L F' L2 B L2 F L2 B' L"],["51","F U R U' R' U R U' R' F'","F R U R' U' R U R' U' F'"],["52","R U R' U R U' B U' B' R'","R B U B' U R' U' R U' R'"],["53","l' U2 L U L' U' L U L' U l","R' F' L F' L' F L F' L' F2 R"],["54","r U2 R' U' R U R' U' R U' r'","L F R' F R F' R' F R F2 L'"],["55","R' F R U R U' R2 F' R2 U' R' U R U R'","R U' R' U' R U R2 F R2 U R' U' R' F' R"],["56","r' U' r U' R' U R U' R' U R r' U r","L' B' L R' U' R U R' U' R U L' B L"],["57","R U R' U' M' U R U' r'","L F R' F' R L' U R U' R'"]]};
+  const CASE_DATA = {"PLL":[["Aa","x R' U R' D2 R U' R' D2 R2 x'","R2 B2 R F R' B2 R F' R"],["Ab","x R2 D2 R U R' D2 R U' R x'","R' F R' B2 R F' R' B2 R2"],["E","x' R U' R' D R U R' D' R U R' D R U' R' D' x","F R B R' F' R B' R' F R B' R' F' R B R'"],["F","R' U' F' R U R' U' R' F R2 U' R' U' R U R' U R","R' U' R U' R' U R U R2 F' R U R U' R' F U R"],["Ga","R2 U R' U R' U' R U' R2 U' D R' U R D'","D R' U' R D' U R2 U R' U R U' R U' R2"],["Gb","R' U' R U D' R2 U R' U R U' R U' R2 D","D' R2 U R' U R' U' R U' R2 D U' R' U R"],["Gc","R2 U' R U' R U R' U R2 U D' R U' R' D","D' R U R' D U' R2 U' R U' R' U R' U R2"],["Gd","R U R' U' D R2 U' R U' R' U R' U R2 D'","D R2 U' R U' R U R' U R2 D' U R U' R'"],["H","M2 U M2 U2 M2 U M2","R2 L2 D' R2 L2 U2 R2 L2 D' R2 L2"],["Ja","x R2 F R F' R U2 r' U r U2 x'","F2 L' U' L F2 R' D R' D' R2"],["Jb","R U R' F' R U R' U' R' F R2 U' R'","R U R2 F' R U R U' R' F R U' R'"],["Na","R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'","R U R' U2 R U R2 F' R U R U' R' F R U' R' U' R U' R'"],["Nb","R' U R U' R' F' U' F R U R' F R' F' R U' R","R' U R' F R F' R U' R' F' U F R U R' U' R"],["Ra","R U' R' U' R U R D R' U' R D' R' U2 R'","R U2 R D R' U R D' R' U' R' U R U R'"],["Rb","R2 F R U R U' R' F' R U2 R' U2 R","R' U2 R U2 R' F R U R' U' R' F' R2"],["T","R U R' U' R' F R2 U' R' U' R U R' F'","F R U' R' U R U R2 F' R U R U' R'"],["Ua","M2 U M U2 M' U M2","R2 L2 D' R L' F2 R' L D' R2 L2"],["Ub","M2 U' M U2 M' U' M2","R2 L2 D R L' F2 R' L D R2 L2"],["V","R U' R U R' D R D' R U' D R2 U R2 D' R2","R2 D R2 U' R2 D' U R' D R' D' R U' R' U R'"],["Y","F R U' R' U' R U R' F' R U R' U' R' F R F'","F R' F' R U R U' R' F R U' R' U R U R' F'"],["Z","M' U M2 U M2 U M' U2 M2","R2 L2 D2 R L' F' R2 L2 B' R2 L2 F' R L'"]],"OLL":[["1","R U2 R2 F R F' U2 R' F R F'","F R' F' R U2 F R' F' R2 U2 R'"],["2","F R U R' U' F' f R U R' U' f'","B L U L' U' B' F U R U' R' F'"],["3","f R U R' U' f' U' F R U R' U' F'","F U R U' R' F' U B L U L' U' B'"],["4","f R U R' U' f' U F R U R' U' F'","F U R U' R' F' U' B L U L' U' B'"],["5","r' U2 R U R' U r","L' B' R B' R' B2 L"],["6","r U2 R' U' R U' r'","L F R' F R F2 L'"],["7","r U R' U R U2 r'","L F2 R' F' R F' L'"],["8","l' U' L U' L' U2 l","R' F2 L F L' F R"],["9","R U R' U' R' F R2 U R' U' F'","F U R U' R2 F' R U R U' R'"],["10","R U R' U R' F R F' R U2 R'","R U2 R' F R' F' R U' R U' R'"],["11","r U R' U R' F R F' R U2 r'","L F2 R' D R' D' R F' R F' L'"],["12","M' R' U' R U' R' U2 R U' R r'","L R' F R' F2 R F R' F R2 L'"],["13","F U R U' R2 F' R U R U' R'","R U R' U' R' F R2 U R' U' F'"],["14","R' F R U R' F' R F U' F'","F U F' R' F R U' R' F' R"],["15","r' U' r R' U' R U r' U r","L' B' L U' R' U R L' B L"],["16","r U r' R U R' U' r U' r'","L F L' U R U' R' L F' L'"],["17","R U R' U R' F R F' U2 R' F R F'","F R' F' R U2 F R' F' R U' R U' R'"],["18","r U R' U R U2 r2 U' R U' R' U2 r","L' B2 R B R' B L2 F2 R' F' R F' L'"],["19","r' R U R U R' U' M' R' F R F'","F R' F' R2 L' B R B' R' B' R' L"],["20","r U R' U' M2 U R U' R' U' M'","R L' B R B R' B' R2 L2 F R F' L'"],["21","R U2 R' U' R U R' U' R U' R'","R U R' U R U' R' U R U2 R'"],["22","R U2 R2 U' R2 U' R2 U2 R","R' U2 R2 U R2 U R2 U2 R'"],["23","R2 D' R U2 R' D R U2 R","R' U2 R' D' R U2 R' D R2"],["24","r U R' U' r' F R F'","F R' F' L F R F' L'"],["25","F' r U R' U' r' F R","R' F' L F R F' L' F"],["26","R U2 R' U' R U' R'","R U R' U R U2 R'"],["27","R U R' U R U2 R'","R U2 R' U' R U' R'"],["28","r U R' U' M U R U' R'","R U R' U' R' L F R F' L'"],["29","R U R' U' R U' R' F' U' F R U R'","R U' R' F' U F R U R' U R U' R'"],["30","F R' F R2 U' R' U' R U R' F2","F2 R U' R' U R U R2 F' R F'"],["31","R' U' F U R U' R' F' R","R' F R U R' U' F' U R"],["32","L U F' U' L' U L F L'","L F' L' U' L U F U' L'"],["33","R U R' U' R' F R F'","F R' F' R U R U' R'"],["34","R U R2 U' R' F R U R U' F'","F U R' U' R' F' R U R2 U' R'"],["35","R U2 R2 F R F' R U2 R'","R U2 R' F R' F' R2 U2 R'"],["36","L' U' L U' L' U L U L F' L' F","F' L F L' U' L' U' L U L' U L"],["37","F R' F' R U R U' R'","R U R' U' R' F R F'"],["38","R U R' U R U' R' U' R' F R F'","F R' F' R U R U R' U' R U' R'"],["39","L F' L' U' L U F U' L'","L U F' U' L' U L F L'"],["40","R' F R U R' U' F' U R","R' U' F U R U' R' F' R"],["41","R U R' U R U2 R' F R U R' U' F'","F U R U' R' F' R U2 R' U' R U' R'"],["42","R' U' R U' R' U2 R F R U R' U' F'","F U R U' R' F' R' U2 R U R' U R"],["43","F' U' L' U L F","F' L' U' L U F"],["44","F U R U' R' F'","F R U R' U' F'"],["45","F R U R' U' F'","F U R U' R' F'"],["46","R' U' R' F R F' U R","R' U' F R' F' R U R"],["47","R' U' R' F R F' R' F R F' U R","R' U' F R' F' R F R' F' R U R"],["48","F R U R' U' R U R' U' F'","F U R U' R' U R U' R' F'"],["49","r U' r2 U r2 U r2 U' r","L' B L2 F' L2 B' L2 F L'"],["50","r' U r2 U' r2 U' r2 U r'","L F' L2 B L2 F L2 B' L"],["51","F U R U' R' U R U' R' F'","F R U R' U' R U R' U' F'"],["52","R U R' U R U' B U' B' R'","R B U B' U R' U' R U' R'"],["53","l' U2 L U L' U' L U L' U l","R' F' L F' L' F L F' L' F2 R"],["54","r U2 R' U' R U R' U' R U' r'","L F R' F R F' R' F R F2 L'"],["55","R' F R U R U' R2 F' R2 U' R' U R U R'","R U' R' U' R U R2 F R2 U R' U' R' F' R"],["56","r' U' r U' R' U R U' R' U R r' U r","L' B' L R' U' R U R' U' R U L' B L"],["57","R U R' U' M' U R U' r'","L F R' F' R L' U R U' R'"]]};
   const PUZ = {
     '222': { n: 2, label: '2×2', len: 10 },
     '333': { n: 3, label: '3×3', len: 20 },
@@ -1774,7 +1868,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
       const r = $('#reveal'); r.hidden = !revealed;
       if (revealed && curCase) {
         const c = CASES[set][curCase];
-        r.innerHTML = `${caseView(set, st)}<div><div class="nm">${caseTitle(set, curCase)}</div><div class="grp">กลุ่ม ${groupOf(set, curCase)}</div><div class="alg">${c.alg}</div></div>`;
+        r.innerHTML = `${caseView(set, st)}<div><div class="nm">${caseTitle(set, curCase)}</div><div class="grp">กลุ่ม ${groupOf(set, curCase)}</div><div class="alg">${c.alg}</div><button class="btn pri v3b" type="button" data-v3d="${set}:${curCase}">ดูวิธีบิดแบบ 3D</button></div>`;
       }
     } else {
       $('#scrLabel').textContent = mode === 'cfop' ? `สแครมเบิล CFOP · กดทุกครั้งที่จบแต่ละช่วง` : `สแครมเบิล ${PUZ[state.puzzle].label} · ${scramble.length} ท่า`;
@@ -1792,8 +1886,8 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   function crossHTML(scr, col) {
     const all = crossAll(scr), best = Math.min(...all.map(r => r.len));
     const rows = col === 'any' ? all.slice().sort((a, b) => a.len - b.len) : all.filter(r => r.c === col);
-    const row = r => `<div class="xrow${col === 'any' && r.len === best ? ' best' : ''}"><span class="sw" style="background:var(--c-${COLORS.std[r.c]})"></span><b>${XNAMES[r.c]} · ${r.len} ท่า</b><span class="hold">ถือ${XNAMES[r.c]}ไว้ล่าง ${XNAMES[r.front]}หันเข้าหาตัว${r.rot ? ` (${XROTTXT[r.rot]})` : ''}</span><code>${r.sol.join(' ') || 'cross เสร็จอยู่แล้ว'}</code></div>`;
-    return `<div class="label">${col === 'any' ? 'ทางที่สั้นที่สุดของแต่ละสี' : 'ทางที่สั้นที่สุด'}</div>${rows.map(row).join('')}`;
+    const row = r => `<div class="xrow${col === 'any' && r.len === best ? ' best' : ''}"><span class="sw" style="background:var(--c-${COLORS.std[r.c]})"></span><b>${XNAMES[r.c]} · ${r.len} ท่า</b><span class="hold">ถือ${XNAMES[r.c]}ไว้ล่าง ${XNAMES[r.front]}หันเข้าหาตัว${r.rot ? ` (${XROTTXT[r.rot]})` : ''}</span><code>${r.sol.join(' ') || 'cross เสร็จอยู่แล้ว'}</code>${r.len ? `<button class="btn ghost xv" type="button" data-xc3="${r.c}">ดู 3D</button>` : ''}</div>`;
+    return `<div class="label">${col === 'any' ? 'ทางที่สั้นที่สุดของแต่ละสี' : 'ทางที่สั้นที่สุด'}</div><div data-scr="${scr.join(' ')}">${rows.map(row).join('')}</div>`;
   }
   const crossLen = (scr, col) => col === 'any' ? Math.min(...crossAll(scr).map(r => r.len)) : crossAll(scr).find(r => r.c === col).len;
   const stagesFor = () => state.cfop.split === 7 ? STAGES7 : STAGES4;
@@ -2075,7 +2169,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
 
   /* ---------- input ---------- */
   window.addEventListener('keydown', e => {
-    if (!modalEl.hidden) { if (e.key === 'Escape') closeModal(); return; }
+    if (!modalEl.hidden) { if (e.key === 'Escape') closeModal(); else if (sheet.dataset.kind === 'v3d') v3dKey(e); return; }
     if (phase === 'running') { e.preventDefault(); if (e.repeat) return; runPress(); if (e.code === 'Space') swallowKey = true; return; }
     if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) press(); return; }
     if (e.key === 'Escape') cancel();
@@ -2141,6 +2235,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   function closeModal() {
     const kind = sheet.dataset.kind;
     modalEl.hidden = true; modalHandler = null; sheet.dataset.kind = '';
+    if (kind === 'v3d') { if (V) V.alive = false; const back = v3dBack; v3dBack = null; if (back) { back(); return; } }
     if (kind === 'picker') { const set = trainSet(); if (set && !selected(set).includes(curCase)) newScramble(); else renderScramble(); }
   }
   modalEl.addEventListener('click', e => {
@@ -2167,12 +2262,14 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
         <button class="btn" type="button" data-act="ok" aria-pressed="${pp('ok')}">OK</button>
         <button class="btn" type="button" data-act="+2" aria-pressed="${pp('+2')}">+2</button>
         <button class="btn" type="button" data-act="dnf" aria-pressed="${pp('dnf')}">DNF</button>
+        <button class="btn" type="button" data-act="v3d">ดู 3D</button>
         <button class="btn ghost" type="button" data-act="copy">คัดลอก</button>
         <span class="sp"></span>
         <button class="btn danger" type="button" data-act="del">ลบ</button>
         <button class="btn" type="button" data-act="close" data-focus>ปิด</button>
       </div>`, act => {
       if (act === 'copy') return copy(s.scr, 'คัดลอกแล้ว');
+      if (act === 'v3d') return set && s.cs && CASES[set] && CASES[set][s.cs] ? openCaseViewer(set, s.cs, () => openSolve(i)) : openScrViewer(s.scr.split(' '), () => openSolve(i));
       setPen(i, act);
       if (act === 'del') closeModal(); else openSolve(i);
     });
@@ -2476,7 +2573,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   });
 
   /* ---------- language (Thai source text, English via phrase table) ---------- */
-  const EN = {"เริ่มจากลูกที่แก้เสร็จแล้ว ถือสีเหลืองไว้ด้านบน สีเขียวหันเข้าหาตัว แล้วหมุนตามนี้ · คู่ที่ต้องใส่คือช่องหน้า-ขวา": "Start from a solved cube, yellow on top and green facing you, then apply these moves · the pair goes into the front-right slot", "เริ่มจากลูกที่แก้เสร็จแล้ว ถือสีเหลืองไว้ด้านบน สีเขียวหันเข้าหาตัว แล้วหมุนตามนี้": "Start from a solved cube, yellow on top and green facing you, then apply these moves", "ชั้นบน · ขาวหันข้าง": "Top layer · white facing sideways", "ชั้นบน · ขาวหันขึ้น": "Top layer · white facing up", "มุมอยู่ในช่องแล้ว": "Corner already in the slot", "ขอบอยู่ในช่องแล้ว": "Edge already in the slot", "อยู่ในช่องทั้งคู่": "Both pieces in the slot", "พื้นหลังหยุดนิ่งอยู่": "The background is paused", "เครื่องนี้ตั้งค่าให้ลดภาพเคลื่อนไหว (Windows: ปิด Show animations) หน้าเว็บเลยหยุดพื้นหลังไว้": "This device asks for reduced motion (Windows: Show animations is off), so the page paused the background", "รูป JPG / PNG / WebP · GIF ขยับได้ · วิดีโอ MP4 / WebM / MOV · กด Ctrl+V วางรูปที่คัดลอกไว้ก็ได้": "JPG / PNG / WebP images · animated GIFs · MP4 / WebM / MOV videos · or press Ctrl+V to paste a copied image", "แอนิเมชันเปิดอยู่": "Animation is on", "เครื่องนี้ตั้งให้ลดภาพเคลื่อนไหว แต่คุณเลือกเปิดพื้นหลังเคลื่อนไหวไว้": "This device asks for reduced motion, but you turned the animated background on", "แอนิเมชันภาพ": "Image animation", "ทำให้รูปนิ่งๆ ขยับได้ ความเร็วปรับที่ ความเร็วแอนิเมชัน ด้านล่าง": "Brings a still image to life. Set the pace with Animation speed below", "คัดลอกข้อมูลทั้งหมด": "Copy all data", "ได้เป็นข้อความ JSON เก็บไว้ในโน้ตได้ (ไม่รวมไฟล์พื้นหลัง)": "Copies JSON text you can keep in a note (background files not included)", "เวลาถูกเก็บไว้ในเบราว์เซอร์นี้เท่านั้น ถ้าจะย้ายเครื่องให้คัดลอกข้อมูลไปเก็บไว้": "Your times are stored only in this browser. Copy your data to move it to another device", "กดทีเดียวเปลี่ยนทั้งพื้นหลัง สี ฟอนต์ และการ์ด แล้วค่อยปรับต่อในหมวดอื่นได้": "One click sets the background, colours, fonts and cards. Fine-tune them in the other sections", "จับเวลาโหมดนี้แล้วกดทุกครั้งที่จบแต่ละช่วง จะเห็นว่าช่วงไหนใช้เวลามากสุด": "Time solves in this mode and press at the end of each stage to see which stage takes longest", "นำเข้าข้อมูล": "Import data", "วาง JSON ที่คัดลอกไว้ จะแทนที่ข้อมูลทั้งหมดในเครื่องนี้": "Paste JSON you copied earlier. It replaces all data in this browser", "พื้นหลังหยุดนิ่งเพราะเครื่องตั้งค่าลดภาพเคลื่อนไหว เปิดได้ที่ สตูดิโอ → พื้นหลัง": "The background is paused because this device asks for reduced motion. Turn it on in Studio → Background", "แตะเพื่อเริ่มตรวจดู 15 วินาที": "Tap to start the 15-second inspection", "กด Space เพื่อเริ่มตรวจดู 15 วินาที": "Press Space to start the 15-second inspection", "ประเภทพื้นหลัง": "Background type", "ฉากเคลื่อนไหว ไล่สีเอง สีพื้น หรือไฟล์ของคุณเอง": "Animated scene, your own gradient, a solid colour, or your own file", "รีเซ็ตการตั้งค่าหน้าตา": "Reset appearance settings", "กลับเป็นค่าเริ่มต้น เวลาที่จับไว้ไม่หาย": "Back to defaults. Your times are kept", "ตั้งแล้ว แต่เบราว์เซอร์นี้บันทึกไฟล์ไม่ได้ จะหายเมื่อปิดหน้า": "Set, but this browser can't save the file, so it will be gone when you close the page", "หยุดพื้นหลังตอนจับเวลา": "Pause background while timing", "ช่วยให้ตัวจับเวลาลื่นบนเครื่องช้า": "Keeps the timer smooth on slower devices", "เลือกฟอนต์ตัวเลขจับเวลา ฟอนต์ตัวหนังสือ และสไตล์ของตัวเลข": "Pick the timer font, the text font and the digit style", "เลือกประเภท แล้วปรับได้อิสระ ทุกอย่างเปลี่ยนให้เห็นทันที": "Pick a type, then adjust anything. Changes show instantly", "ครั้งในเซสชันนี้ และย้อนกลับไม่ได้ เซสชันอื่นไม่ถูกแตะ": "solves in this session and can't be undone. Other sessions are not touched", "ซ่อนแผงตอนจับเวลา": "Hide panels while timing", "เหลือแค่ตัวเลขกลางจอ ไม่ให้วอกแวก": "Leaves only the time on screen, no distractions", "เวลาที่เห็นเป็นตัวอย่าง จะหายไปเองเมื่อจับเวลาครั้งแรก": "These are sample times. They disappear after your first solve", "ตั้งเป้าแยกตามโหมด สลับโหมดด้านบนเพื่อตั้งของโหมดอื่น": "Goals are set per mode. Switch modes at the top to set another one", "อนุภาคที่ลอยทับพื้นหลังแบบไหนก็ได้ รวมถึงรูปของคุณเอง": "Particles that float over any background, including your own image", "ความมืดทับ": "Dim overlay", "ทับสีลงบนพื้นหลังให้ตัวหนังสือเด่นขึ้น": "Tints the background so text stands out", "ยังไม่ได้เลือกไฟล์ ระหว่างนี้จะแสดงฉากเคลื่อนไหวแทน": "No file chosen yet. An animated scene shows in the meantime", "สีที่ทับ": "Overlay colour", "ปกติใช้สีดำ ลองสีอื่นเพื่ออารมณ์ต่างไป": "Usually black. Try another colour for a different mood", "ตัวเลขระหว่างจับ": "Time while solving", "บางคนชอบไม่เห็นเวลาระหว่างแก้": "Some people prefer not to see the time while solving", "กดค้างแล้วปล่อยเพื่อเริ่ม · ปุ่มใดก็ได้เพื่อหยุด": "hold and release to start · any key to stop", "เคส · ใต้ภาพคือจำนวนครั้งและเวลาเฉลี่ยของเคสนั้น": "cases · under each picture: solves and average time for that case", "ทางที่สั้นที่สุดของแต่ละสี": "Shortest solution for each colour", "ทางที่สั้นที่สุด": "Shortest solution", "นับว่ากี่ครั้งที่ทำได้ต่ำกว่าเวลานี้": "Counts how many solves are faster than this", "การจัดภาพ": "Fit", "เต็มจอจะตัดขอบ พอดีจะเห็นทั้งภาพ": "Fill crops the edges, Fit shows the whole picture", "ความสว่างพื้นหลัง": "Background brightness", "ลดลงถ้าพื้นหลังแย่งสายตา": "Lower it if the background is distracting", "ความเบลอกระจก": "Glass blur", "เบลอพื้นหลังที่อยู่ใต้การ์ด": "Blurs the background behind the cards", "สีฉากตามธีม": "Scene colours follow theme", "ปิดเพื่อเลือกสีของฉากเองอิสระ": "Turn off to pick the scene colours yourself", "อ่านข้อมูลไม่ได้ ตรวจว่าวาง JSON ครบทั้งก้อน": "Couldn't read that. Make sure you pasted the whole JSON", "จำนวนครั้งในเซสชัน": "Solves in session", "อยากจับให้ครบกี่ครั้ง": "How many solves you want to do", "ยังไม่ได้เลือกเคส ถ้าปิดตอนนี้จะสุ่มจากทั้ง": "No cases selected. If you close now, it picks from all", "ชุดสีสำเร็จรูป": "Ready-made palettes", "กดเพื่อใช้ แล้วแก้ต่อได้": "Click to use, then edit", "สแครมเบิล CFOP · กดทุกครั้งที่จบแต่ละช่วง": "CFOP scramble · press at the end of each stage", "แตะจอเพื่อหยุด": "Tap to stop", "กดปุ่มใดก็ได้เพื่อหยุด": "Press any key to stop", "12 ครั้งล่าสุด · แยกช่วง": "Last 12 · by stage", "12 ครั้งล่าสุด": "Last 12 solves", "ถือสีเหลืองไว้ด้านบน สีเขียวหันเข้าหาตัว": "Yellow on top, green facing you", "รูปแบบการไล่": "Gradient style", "เมชจะขยับไหลไปมาแบบนุ่มๆ": "Mesh flows around softly", "สไตล์ตัวเลข": "Digit style", "หน้าตาของตัวเลขใหญ่กลางจอ": "How the big time in the middle looks", "เบลอภาพ": "Blur", "ช่วยให้ตัวหนังสืออ่านง่ายขึ้น": "Makes text easier to read", "เปลี่ยนสีทั้งหน้า รวมถึงสีของฉากพื้นหลัง": "Changes the colours of the whole page, including the background scene", "เป้า ao5 (วินาที)": "ao5 goal (seconds)", "ao5 ที่อยากทำให้ได้": "The ao5 you're aiming for", "ความทึบของการ์ด": "Card opacity", "ใช้กับสไตล์กระจก ต่ำ = มองทะลุมากขึ้น": "For the Glass style. Lower = more see-through", "สีของฉัน": "My colours", "เลือกสองสีเอง ใช้กับพื้นมืด": "Pick two colours, used on a dark base", "แยกตามช่วง · 12 ครั้งล่าสุด": "By stage · last 12", "บันได Sub-X": "Sub-X ladder", "ความมนของมุม": "Corner radius", "มุมเหลี่ยมหรือโค้งมน": "Square or rounded corners", "ไฟล์ใหญ่เกิน 200 MB ลองย่อขนาดก่อนนะ": "The file is over 200 MB. Try making it smaller first", "จับเวลาอย่างน้อย 2 ครั้งเพื่อดูกราฟ": "Do at least 2 solves to see the chart", "ขนาดตัวเลข": "Timer size", "ขนาดตัวจับเวลากลางจอ": "Size of the time in the middle", "ตำแหน่งแนวตั้ง": "Vertical position", "เลื่อนภาพขึ้น–ลง": "Move the picture up or down", "ตำแหน่งแนวนอน": "Horizontal position", "เลื่อนภาพซ้าย–ขวา": "Move the picture left or right", "ยังไม่มีเวลา ลองจับเวลาครั้งแรกเลย": "No times yet. Do your first solve", "แตะค้างที่นี่": "Touch and hold here", "กด Space ค้างไว้": "Hold Space", "กราฟแท่งแยกตามช่วง 12 ครั้งล่าสุด": "Stacked bars by stage, last 12 solves", "คัดลอกไม่ได้ ลองเลือกข้อความเองนะ": "Couldn't copy. Try selecting the text yourself", "สีของฉาก": "Scene colours", "สองสีหลักที่ใช้วาดฉาก": "The two main colours used to draw the scene", "หมุนทั้งลูก": "rotate", "ใช้ได้เฉพาะไฟล์รูปภาพหรือวิดีโอ": "Only image or video files work", "ความหนาแน่น": "Density", "จำนวนอนุภาคบนจอ": "How many particles are on screen", "ถือสีขาวบน สีเขียวหันเข้าหาตัว": "White on top, green facing you", "สีพื้นหลัง": "Background colour", "เลือกสีอะไรก็ได้": "Any colour you like", "มินิมอล": "Minimal", "เหลือแค่ตัวจับเวลา": "Just the timer", "สลับข้าง": "Mirrored", "รายการเวลาอยู่ขวา": "Times list on the right", "เปลี่ยนหน้าตาแผงทั้งหมดในหน้า": "Changes the look of every panel", "จัดวางหน้าจอและการแสดงตัวเลข": "Screen arrangement and how the time is shown", "สีที่ใช้ไล่": "Gradient colours", "ใส่ได้ 2–4 สี": "2–4 colours", "เกิน 15 วินาที · โดน +2 แล้ว": "Over 15 seconds · +2 applied", "แผงครบ 3 คอลัมน์": "All panels in 3 columns", "ไวด์": "Wide", "ตัวเลขเต็มความกว้าง": "Full-width timer", "กราฟเวลา · 50 ครั้งล่าสุด": "Times · last 50", "ดาวเคราะห์ ตัวเลขเรืองแสง": "Planet, glowing digits", "ภาพเคส F2L มุมมองหน้า-ขวา": "F2L case, front-right view", "มุม": "Angle", "ทิศทางของการไล่สี": "Direction of the gradient", "กราฟแท่ง 12 ครั้งล่าสุด": "Bar chart of the last 12 solves", "ซินธ์เวฟ ตัวเลขขอบเรือง": "Synthwave, glowing outline digits", "ยังไม่มีเวลาแบบแยกช่วง": "No split times yet", "ลูกบิด 3 มิติลอยเต็มจอ": "3D cubes floating everywhere", "หรือลากไฟล์มาวางตรงนี้": "or drop a file here", "พาสเทล กลีบซากุระร่วง": "Pastel, falling sakura petals", "ยังไม่มีเวลาให้คัดลอก": "No times to copy yet", "รังผึ้งนีออน หิ่งห้อย": "Neon honeycomb, fireflies", "เปิดแอนิเมชันพื้นหลัง": "Turn on background animation", "คลื่นทะเล ฟองสบู่ลอย": "Ocean waves, floating bubbles", "ตั้งเป็นพื้นหลังแล้ว": "Set as background", "ภาพลูกบาศก์แบบกางออก": "Unfolded cube net", "เซสชันนี้ยังว่างอยู่": "This session is empty", "เป้าหมายและค่าเฉลี่ย": "Goals and averages", "ซ่อนเฉลย": "Hide answer", "ดูเฉลย": "Show answer", "หน้าตาหลังสแครมเบิล": "After the scramble", "แล้วปล่อยเพื่อเริ่ม": "then release to start", "ภาพเคสมองจากด้านบน": "Case seen from the top", "รูป / GIF / วิดีโอ": "Image / GIF / video", "เสียงเตือน 8/12 วิ": "8/12 s alerts", "ของเวลา": "of time", "คิดจาก": "from", "ความเร็วแอนิเมชัน": "Animation speed", "จับเวลา ค่าเฉลี่ย": "Timer average", "ปรับผลครั้งล่าสุด": "Adjust the last solve", "วิดีโอ": "video", "รูปภาพ": "image", "หน้าตาหลังเซ็ตอัป": "After the setup", "แสงเหนือ หิมะโปรย": "Northern lights, falling snow", "กดเมื่อจบช่วงนี้": "press when this stage is done", "กราฟเวลาย้อนหลัง": "Times chart", "คัดลอกข้อมูลแล้ว": "Data copied", "ดาวเคราะห์วงแหวน": "Ringed planet", "นำเข้าข้อมูลแล้ว": "Data imported", "ฟ้ายามเย็น ฝนพรำ": "Evening sky, light rain", "สายฝนโน้ตท่าหมุน": "Move-notation rain", "ใช้เวลามากสุดคือ": "Slowest stage:", "คัดลอกสถิติแล้ว": "Stats copied", "นำเข้าและแทนที่": "Import and replace", "ปล่อยเพื่อเริ่ม!": "Release to start!", "ปล่อยเพื่อเริ่ม": "Release to start", "ฟอนต์ตัวหนังสือ": "Text font", "รูปจากคลิปบอร์ด": "Pasted image", "เส้นชั้นความสูง": "Contour lines", "กลับไปหยุดนิ่ง": "Pause it again", "ความเร็ววิดีโอ": "Video speed", "ซูม": "Zoom", "ขยายภาพ": "Enlarge the picture", "ฟอนต์และตัวเลข": "Fonts & digits", "เป้าหมายเซสชัน": "Session goals", "ฉากเคลื่อนไหว": "Animated scene", "ฝนโน้ตท่าหมุน": "Notation rain", "สลับทั้งกลุ่ม": "Toggle group", "เปลี่ยนสีวนไป": "Colour cycle", "เสร็จอยู่แล้ว": "already solved", "ดีสุด · เป้า": "best · goal", "ตรวจดู 15 วิ": "15 s inspection", "ยังไม่มีเวลา": "No times yet", "รังผึ้งนีออน": "Neon honeycomb", "ลุคสำเร็จรูป": "Ready-made looks", "สว่าง สบายตา": "Bright and easy on the eyes", "สแครมเบิลฝึก": "Training scramble:", "หันเข้าหาตัว": " facing you", "เลือกทั้งหมด": "Select all", "กดเพื่อหยุด": "press to stop", "กำลังตรวจดู": "Inspecting", "ครั้งล่าสุด": "latest", "คัดลอกสถิติ": "Copy stats", "ช่วงสุดท้าย": "Last stage", "ฟอนต์ตัวเลข": "Timer font", "ยังไม่เคยทำ": "not done yet", "ลอยตามเมาส์": "Follow mouse", "วาร์ปดวงดาว": "Star warp", "เลือกรูปภาพ / GIF": "Choose image / GIF", "เลือกวิดีโอ": "Choose video", "เอฟเฟกต์ลอย": "Floating effects", "แพนซ้าย-ขวา": "Pan", "ไม่เลือกเลย": "Select none", "กลีบซากุระ": "Sakura petals", "คัดลอกแล้ว": "Copied", "จำนวนครั้ง": "Solves", "รายการเวลา": "Times list", "ลูกบิดร่วง": "Falling cubes", "ล้างเซสชัน": "Clear session", "สไตล์การ์ด": "Card style", "เคสที่แล้ว": "Last case", "เซ็ตอัปเคส": "Case setup", "คลื่นทะเล": "Ocean waves", "ค่าเฉลี่ย": "Averages", "ดีสุดใหม่!": " — new best!", "PB ใหม่!": "New PB!", "ตอนนี้ใช้": "Now using", "ลูกบิดลอย": "Floating cubes", "สแครมเบิล": "Scramble", "เลย์เอาต์": "Layout", "เลือกโหมด": "Choose mode", "แสงออโรรา": "Aurora", "กาแล็กซี": "Galaxy", "ขอบเรือง": "Glow outline", "ครั้งที่ ": "Solve #", "ครั้งที่": "Solve #", "จะลบทั้ง": "This deletes all", "ซินธ์เวฟ": "Synthwave", "ดาวระยิบ": "Twinkling stars", "ดีที่สุด": "Best", "ตัวอย่าง": "sample", "พื้นหลัง": "Background", "ลบสีท้าย": "Remove last", "ล้างเวลา": "Clear all", "สถิติย่อ": "Quick stats", "สุ่มใหม่": "New scramble", "หยุดนิ่ง": "paused", "หิ่งห้อย": "Fireflies", "เป้าหมาย": "Goals", "เรืองแสง": "Neon glow", "เร็วขึ้น": "faster by", "เลือกเคส": "Cases", "เลือกไว้": "Selected", "เวลาจริง": "raw time", "ไล่สีเอง": "Gradient", "คลาสสิก": "Classic", "ความยาว": "Length", "ค้างไว้…": "Hold…", "ค้างไว้": "Hold", "ซันเซ็ต": "Sunset", "ซูมช้าๆ": "Slow zoom", "ต่ำกว่า": "Under", "ทั้งหมด": "times", "ฟองสบู่": "Bubbles", "ล้างเลย": "Clear", "สตูดิโอ": "Studio", "สีแนะนำ": "Suggested colours", "เนบิวลา": "Nebula", "+ เพิ่มสี": "+ Add colour", "เพิ่มสี": "Add colour", "เวลารวม": "Total time", "เส้นขอบ": "Outline", "เส้นตรง": "Linear", "แก้เป้า": "Edit goals", "แยกช่วง": "Splits", "โหมดฝึก CFOP": "CFOP training modes", "โอเชียน": "Ocean", "ไว้ล่าง": " on the bottom,", "ข้อมูล": "Data", "คัดลอก JSON": "Copy JSON", "คัดลอก": "Copy", "ซากุระ": "Sakura", "ตอนนี้": "Now", "ยกเลิก": "Cancel", "รีเซ็ต": "Reset", "วินาที": "seconds", "สีพื้น": "Solid colour", "สีหลัก": "Main", "ออโรรา": "Aurora", "เซสชัน": "Session", "เต็มจอ": "Fill", "เรียบๆ": "Simple", "เหลือง": "yellow", "เอาออก": "Remove", "ใช้ลุค": "Applied look", "กระจก": "Glass", "กลุ่ม": "Group", "ครั้ง": "solves", "ชุดสี": "Palette", "ดีสุด": "Best", "ทุกสี": "Any", "นีออน": "Neon", "มัทฉะ": "Matcha", "วงกลม": "Radial", "สายฝน": "Rain", "สีธีม": "Theme colours", "สีรอง": "Second", "หายใจ": "Breathe", "เรียบ": "Plain", "เสร็จ": "Done", "ไม่มี": "None", "ไล่สี": "Gradient", "ช่วง": "stages", "ซ่อน": "Hide", "นิ่ง": "Still", "ปกติ": "normal", "พอดี": "Fit", "สุ่ม": "Any", "หิมะ": "Snow", "เวลา": "Time", "แล้ว": "", "ใหม่": "new", "ขาว": "white", "จับ": "Track", "จาก": "of", "ถือ": "Hold ", "ทึบ": "Solid", "ท่า": "moves", "ยืด": "Stretch", "ลอย": "Floating", "เคส": "cases", "เมช": "Mesh", "ลบ": "Delete", "วิ": "s", "สี": "Colour", "เขียว": "green", "น้ำเงิน": "blue", "แดง": "red", "ส้ม": "orange", "เลือกเคส F2L": "Choose F2L cases", "เลือกเคส OLL": "Choose OLL cases", "เลือกเคส PLL": "Choose PLL cases", "เลือกไฟล์ หรือลากมาวางตรงนี้": "Choose a file or drop it here", "ดูทุกสี": "All colours", "8 วินาที!": "8 seconds!", "12 วินาที!": "12 seconds!", "เปิดอยู่": "On", "ปิดอยู่": "Off", "ปิด": "Close", "เซ็ตอัป": "Setup", "0 = หยุดนิ่ง": "0 = paused", "100% = ปกติ": "100% = normal", "ติดตั้งแอปแล้ว เปิดได้จากหน้าจอโฮม": "App installed. Open it from your home screen", "ติดตั้งแอป": "Install app", "ดำสนิท เรียบ แบบแอปมือถือ": "Pure black, clean, phone-app style", "ดำสนิท": "Pure black", "สูตร CFOP ทั้งหมด": "All CFOP algorithms", "สูตร CFOP": "CFOP algorithms", "ฝึกเคสนี้": "Practise", "ถือสีเหลืองไว้บน สีเขียวหันเข้าหาตัว · ใส่คู่ที่ช่องหน้า-ขวา · สูตรหาด้วยโปรแกรมให้สั้นที่สุด ใช้แค่ R U F": "Yellow on top, green facing you · the pair goes into the front-right slot · shortest solutions found by a program, using only R U F", "ถือสีเหลืองไว้บน · ภาพมองจากด้านบน สีเหลืองคือสติกเกอร์ที่ต้องหันขึ้น": "Yellow on top · seen from above, yellow marks the stickers that must face up", "ถือสีเหลืองไว้บน · ภาพมองจากด้านบน ปรับ U ก่อนหรือหลังได้ตามมุมที่เห็น": "Yellow on top · seen from above, adjust U before or after as needed", "ฝึกเฉพาะ": "Practising only", "เปลี่ยนได้ที่ เลือกเคส": "change it in Cases", "เมนูหลัก": "Main menu", "จับเวลา": "Timer", "เวลาทั้งหมด": "Times", "สถิติ": "Stats", "เซสชันทั้งหมด": "Sessions", "ตั้งค่า": "Settings", "สถิติปัจจุบัน": "Current stats", "ค่าเฉลี่ยเซสชัน": "Session mean", "สถิติดีสุด": "Best stats", "ส่งออกข้อมูล": "Export data", "เก็บไว้ในเครื่องนี้": "Saved on this device", "พัซเซิล": "Puzzles", "ฝึก CFOP": "CFOP training", "ทั่วไป": "General", "หน้าตา": "Appearance", "ติดตั้งเป็นแอป": "Install as an app", "ข้อมูลและเกี่ยวกับ": "Data & about", "ภาษา": "Language", "กติกา WCA: เกิน 15 วิ +2, เกิน 17 วิ DNF": "WCA rules: over 15 s is +2, over 17 s is DNF", "บี๊บตอนตรวจดูครบ 8 และ 12 วินาที": "Beeps at 8 and 12 seconds of inspection", "ตัวจับเวลารูบิกพร้อมโหมดฝึก CFOP ทุกอย่างเก็บไว้ในเครื่องนี้เท่านั้น ไม่มีบัญชี ไม่มีโฆษณา": "A Rubik's cube timer with CFOP training. Everything stays on this device: no account, no ads", "สำรองหรือย้ายข้อมูล": "Back up or move data", "ดูโค้ดบน GitHub": "View code on GitHub"};
+  const EN = {"เริ่มจากลูกที่แก้เสร็จแล้ว ถือสีเหลืองไว้ด้านบน สีเขียวหันเข้าหาตัว แล้วหมุนตามนี้ · คู่ที่ต้องใส่คือช่องหน้า-ขวา": "Start from a solved cube, yellow on top and green facing you, then apply these moves · the pair goes into the front-right slot", "เริ่มจากลูกที่แก้เสร็จแล้ว ถือสีเหลืองไว้ด้านบน สีเขียวหันเข้าหาตัว แล้วหมุนตามนี้": "Start from a solved cube, yellow on top and green facing you, then apply these moves", "ชั้นบน · ขาวหันข้าง": "Top layer · white facing sideways", "ชั้นบน · ขาวหันขึ้น": "Top layer · white facing up", "มุมอยู่ในช่องแล้ว": "Corner already in the slot", "ขอบอยู่ในช่องแล้ว": "Edge already in the slot", "อยู่ในช่องทั้งคู่": "Both pieces in the slot", "พื้นหลังหยุดนิ่งอยู่": "The background is paused", "เครื่องนี้ตั้งค่าให้ลดภาพเคลื่อนไหว (Windows: ปิด Show animations) หน้าเว็บเลยหยุดพื้นหลังไว้": "This device asks for reduced motion (Windows: Show animations is off), so the page paused the background", "รูป JPG / PNG / WebP · GIF ขยับได้ · วิดีโอ MP4 / WebM / MOV · กด Ctrl+V วางรูปที่คัดลอกไว้ก็ได้": "JPG / PNG / WebP images · animated GIFs · MP4 / WebM / MOV videos · or press Ctrl+V to paste a copied image", "แอนิเมชันเปิดอยู่": "Animation is on", "เครื่องนี้ตั้งให้ลดภาพเคลื่อนไหว แต่คุณเลือกเปิดพื้นหลังเคลื่อนไหวไว้": "This device asks for reduced motion, but you turned the animated background on", "แอนิเมชันภาพ": "Image animation", "ทำให้รูปนิ่งๆ ขยับได้ ความเร็วปรับที่ ความเร็วแอนิเมชัน ด้านล่าง": "Brings a still image to life. Set the pace with Animation speed below", "คัดลอกข้อมูลทั้งหมด": "Copy all data", "ได้เป็นข้อความ JSON เก็บไว้ในโน้ตได้ (ไม่รวมไฟล์พื้นหลัง)": "Copies JSON text you can keep in a note (background files not included)", "เวลาถูกเก็บไว้ในเบราว์เซอร์นี้เท่านั้น ถ้าจะย้ายเครื่องให้คัดลอกข้อมูลไปเก็บไว้": "Your times are stored only in this browser. Copy your data to move it to another device", "กดทีเดียวเปลี่ยนทั้งพื้นหลัง สี ฟอนต์ และการ์ด แล้วค่อยปรับต่อในหมวดอื่นได้": "One click sets the background, colours, fonts and cards. Fine-tune them in the other sections", "จับเวลาโหมดนี้แล้วกดทุกครั้งที่จบแต่ละช่วง จะเห็นว่าช่วงไหนใช้เวลามากสุด": "Time solves in this mode and press at the end of each stage to see which stage takes longest", "นำเข้าข้อมูล": "Import data", "วาง JSON ที่คัดลอกไว้ จะแทนที่ข้อมูลทั้งหมดในเครื่องนี้": "Paste JSON you copied earlier. It replaces all data in this browser", "พื้นหลังหยุดนิ่งเพราะเครื่องตั้งค่าลดภาพเคลื่อนไหว เปิดได้ที่ สตูดิโอ → พื้นหลัง": "The background is paused because this device asks for reduced motion. Turn it on in Studio → Background", "แตะเพื่อเริ่มตรวจดู 15 วินาที": "Tap to start the 15-second inspection", "กด Space เพื่อเริ่มตรวจดู 15 วินาที": "Press Space to start the 15-second inspection", "ประเภทพื้นหลัง": "Background type", "ฉากเคลื่อนไหว ไล่สีเอง สีพื้น หรือไฟล์ของคุณเอง": "Animated scene, your own gradient, a solid colour, or your own file", "รีเซ็ตการตั้งค่าหน้าตา": "Reset appearance settings", "กลับเป็นค่าเริ่มต้น เวลาที่จับไว้ไม่หาย": "Back to defaults. Your times are kept", "ตั้งแล้ว แต่เบราว์เซอร์นี้บันทึกไฟล์ไม่ได้ จะหายเมื่อปิดหน้า": "Set, but this browser can't save the file, so it will be gone when you close the page", "หยุดพื้นหลังตอนจับเวลา": "Pause background while timing", "ช่วยให้ตัวจับเวลาลื่นบนเครื่องช้า": "Keeps the timer smooth on slower devices", "เลือกฟอนต์ตัวเลขจับเวลา ฟอนต์ตัวหนังสือ และสไตล์ของตัวเลข": "Pick the timer font, the text font and the digit style", "เลือกประเภท แล้วปรับได้อิสระ ทุกอย่างเปลี่ยนให้เห็นทันที": "Pick a type, then adjust anything. Changes show instantly", "ครั้งในเซสชันนี้ และย้อนกลับไม่ได้ เซสชันอื่นไม่ถูกแตะ": "solves in this session and can't be undone. Other sessions are not touched", "ซ่อนแผงตอนจับเวลา": "Hide panels while timing", "เหลือแค่ตัวเลขกลางจอ ไม่ให้วอกแวก": "Leaves only the time on screen, no distractions", "เวลาที่เห็นเป็นตัวอย่าง จะหายไปเองเมื่อจับเวลาครั้งแรก": "These are sample times. They disappear after your first solve", "ตั้งเป้าแยกตามโหมด สลับโหมดด้านบนเพื่อตั้งของโหมดอื่น": "Goals are set per mode. Switch modes at the top to set another one", "อนุภาคที่ลอยทับพื้นหลังแบบไหนก็ได้ รวมถึงรูปของคุณเอง": "Particles that float over any background, including your own image", "ความมืดทับ": "Dim overlay", "ทับสีลงบนพื้นหลังให้ตัวหนังสือเด่นขึ้น": "Tints the background so text stands out", "ยังไม่ได้เลือกไฟล์ ระหว่างนี้จะแสดงฉากเคลื่อนไหวแทน": "No file chosen yet. An animated scene shows in the meantime", "สีที่ทับ": "Overlay colour", "ปกติใช้สีดำ ลองสีอื่นเพื่ออารมณ์ต่างไป": "Usually black. Try another colour for a different mood", "ตัวเลขระหว่างจับ": "Time while solving", "บางคนชอบไม่เห็นเวลาระหว่างแก้": "Some people prefer not to see the time while solving", "กดค้างแล้วปล่อยเพื่อเริ่ม · ปุ่มใดก็ได้เพื่อหยุด": "hold and release to start · any key to stop", "เคส · ใต้ภาพคือจำนวนครั้งและเวลาเฉลี่ยของเคสนั้น": "cases · under each picture: solves and average time for that case", "ทางที่สั้นที่สุดของแต่ละสี": "Shortest solution for each colour", "ทางที่สั้นที่สุด": "Shortest solution", "นับว่ากี่ครั้งที่ทำได้ต่ำกว่าเวลานี้": "Counts how many solves are faster than this", "การจัดภาพ": "Fit", "เต็มจอจะตัดขอบ พอดีจะเห็นทั้งภาพ": "Fill crops the edges, Fit shows the whole picture", "ความสว่างพื้นหลัง": "Background brightness", "ลดลงถ้าพื้นหลังแย่งสายตา": "Lower it if the background is distracting", "ความเบลอกระจก": "Glass blur", "เบลอพื้นหลังที่อยู่ใต้การ์ด": "Blurs the background behind the cards", "สีฉากตามธีม": "Scene colours follow theme", "ปิดเพื่อเลือกสีของฉากเองอิสระ": "Turn off to pick the scene colours yourself", "อ่านข้อมูลไม่ได้ ตรวจว่าวาง JSON ครบทั้งก้อน": "Couldn't read that. Make sure you pasted the whole JSON", "จำนวนครั้งในเซสชัน": "Solves in session", "อยากจับให้ครบกี่ครั้ง": "How many solves you want to do", "ยังไม่ได้เลือกเคส ถ้าปิดตอนนี้จะสุ่มจากทั้ง": "No cases selected. If you close now, it picks from all", "ชุดสีสำเร็จรูป": "Ready-made palettes", "กดเพื่อใช้ แล้วแก้ต่อได้": "Click to use, then edit", "สแครมเบิล CFOP · กดทุกครั้งที่จบแต่ละช่วง": "CFOP scramble · press at the end of each stage", "แตะจอเพื่อหยุด": "Tap to stop", "กดปุ่มใดก็ได้เพื่อหยุด": "Press any key to stop", "12 ครั้งล่าสุด · แยกช่วง": "Last 12 · by stage", "12 ครั้งล่าสุด": "Last 12 solves", "ถือสีเหลืองไว้ด้านบน สีเขียวหันเข้าหาตัว": "Yellow on top, green facing you", "รูปแบบการไล่": "Gradient style", "เมชจะขยับไหลไปมาแบบนุ่มๆ": "Mesh flows around softly", "สไตล์ตัวเลข": "Digit style", "หน้าตาของตัวเลขใหญ่กลางจอ": "How the big time in the middle looks", "เบลอภาพ": "Blur", "ช่วยให้ตัวหนังสืออ่านง่ายขึ้น": "Makes text easier to read", "เปลี่ยนสีทั้งหน้า รวมถึงสีของฉากพื้นหลัง": "Changes the colours of the whole page, including the background scene", "เป้า ao5 (วินาที)": "ao5 goal (seconds)", "ao5 ที่อยากทำให้ได้": "The ao5 you're aiming for", "ความทึบของการ์ด": "Card opacity", "ใช้กับสไตล์กระจก ต่ำ = มองทะลุมากขึ้น": "For the Glass style. Lower = more see-through", "สีของฉัน": "My colours", "เลือกสองสีเอง ใช้กับพื้นมืด": "Pick two colours, used on a dark base", "แยกตามช่วง · 12 ครั้งล่าสุด": "By stage · last 12", "บันได Sub-X": "Sub-X ladder", "ความมนของมุม": "Corner radius", "มุมเหลี่ยมหรือโค้งมน": "Square or rounded corners", "ไฟล์ใหญ่เกิน 200 MB ลองย่อขนาดก่อนนะ": "The file is over 200 MB. Try making it smaller first", "จับเวลาอย่างน้อย 2 ครั้งเพื่อดูกราฟ": "Do at least 2 solves to see the chart", "ขนาดตัวเลข": "Timer size", "ขนาดตัวจับเวลากลางจอ": "Size of the time in the middle", "ตำแหน่งแนวตั้ง": "Vertical position", "เลื่อนภาพขึ้น–ลง": "Move the picture up or down", "ตำแหน่งแนวนอน": "Horizontal position", "เลื่อนภาพซ้าย–ขวา": "Move the picture left or right", "ยังไม่มีเวลา ลองจับเวลาครั้งแรกเลย": "No times yet. Do your first solve", "แตะค้างที่นี่": "Touch and hold here", "กด Space ค้างไว้": "Hold Space", "กราฟแท่งแยกตามช่วง 12 ครั้งล่าสุด": "Stacked bars by stage, last 12 solves", "คัดลอกไม่ได้ ลองเลือกข้อความเองนะ": "Couldn't copy. Try selecting the text yourself", "สีของฉาก": "Scene colours", "สองสีหลักที่ใช้วาดฉาก": "The two main colours used to draw the scene", "หมุนทั้งลูก": "rotate", "ใช้ได้เฉพาะไฟล์รูปภาพหรือวิดีโอ": "Only image or video files work", "ความหนาแน่น": "Density", "จำนวนอนุภาคบนจอ": "How many particles are on screen", "ถือสีขาวบน สีเขียวหันเข้าหาตัว": "White on top, green facing you", "สีพื้นหลัง": "Background colour", "เลือกสีอะไรก็ได้": "Any colour you like", "มินิมอล": "Minimal", "เหลือแค่ตัวจับเวลา": "Just the timer", "สลับข้าง": "Mirrored", "รายการเวลาอยู่ขวา": "Times list on the right", "เปลี่ยนหน้าตาแผงทั้งหมดในหน้า": "Changes the look of every panel", "จัดวางหน้าจอและการแสดงตัวเลข": "Screen arrangement and how the time is shown", "สีที่ใช้ไล่": "Gradient colours", "ใส่ได้ 2–4 สี": "2–4 colours", "เกิน 15 วินาที · โดน +2 แล้ว": "Over 15 seconds · +2 applied", "แผงครบ 3 คอลัมน์": "All panels in 3 columns", "ไวด์": "Wide", "ตัวเลขเต็มความกว้าง": "Full-width timer", "กราฟเวลา · 50 ครั้งล่าสุด": "Times · last 50", "ดาวเคราะห์ ตัวเลขเรืองแสง": "Planet, glowing digits", "ภาพเคส F2L มุมมองหน้า-ขวา": "F2L case, front-right view", "มุม": "Angle", "ทิศทางของการไล่สี": "Direction of the gradient", "กราฟแท่ง 12 ครั้งล่าสุด": "Bar chart of the last 12 solves", "ซินธ์เวฟ ตัวเลขขอบเรือง": "Synthwave, glowing outline digits", "ยังไม่มีเวลาแบบแยกช่วง": "No split times yet", "ลูกบิด 3 มิติลอยเต็มจอ": "3D cubes floating everywhere", "หรือลากไฟล์มาวางตรงนี้": "or drop a file here", "พาสเทล กลีบซากุระร่วง": "Pastel, falling sakura petals", "ยังไม่มีเวลาให้คัดลอก": "No times to copy yet", "รังผึ้งนีออน หิ่งห้อย": "Neon honeycomb, fireflies", "เปิดแอนิเมชันพื้นหลัง": "Turn on background animation", "คลื่นทะเล ฟองสบู่ลอย": "Ocean waves, floating bubbles", "ตั้งเป็นพื้นหลังแล้ว": "Set as background", "ภาพลูกบาศก์แบบกางออก": "Unfolded cube net", "เซสชันนี้ยังว่างอยู่": "This session is empty", "เป้าหมายและค่าเฉลี่ย": "Goals and averages", "ซ่อนเฉลย": "Hide answer", "ดูเฉลย": "Show answer", "หน้าตาหลังสแครมเบิล": "After the scramble", "แล้วปล่อยเพื่อเริ่ม": "then release to start", "ภาพเคสมองจากด้านบน": "Case seen from the top", "รูป / GIF / วิดีโอ": "Image / GIF / video", "เสียงเตือน 8/12 วิ": "8/12 s alerts", "ของเวลา": "of time", "คิดจาก": "from", "ความเร็วแอนิเมชัน": "Animation speed", "จับเวลา ค่าเฉลี่ย": "Timer average", "ปรับผลครั้งล่าสุด": "Adjust the last solve", "วิดีโอ": "video", "รูปภาพ": "image", "หน้าตาหลังเซ็ตอัป": "After the setup", "แสงเหนือ หิมะโปรย": "Northern lights, falling snow", "กดเมื่อจบช่วงนี้": "press when this stage is done", "กราฟเวลาย้อนหลัง": "Times chart", "คัดลอกข้อมูลแล้ว": "Data copied", "ดาวเคราะห์วงแหวน": "Ringed planet", "นำเข้าข้อมูลแล้ว": "Data imported", "ฟ้ายามเย็น ฝนพรำ": "Evening sky, light rain", "สายฝนโน้ตท่าหมุน": "Move-notation rain", "ใช้เวลามากสุดคือ": "Slowest stage:", "คัดลอกสถิติแล้ว": "Stats copied", "นำเข้าและแทนที่": "Import and replace", "ปล่อยเพื่อเริ่ม!": "Release to start!", "ปล่อยเพื่อเริ่ม": "Release to start", "ฟอนต์ตัวหนังสือ": "Text font", "รูปจากคลิปบอร์ด": "Pasted image", "เส้นชั้นความสูง": "Contour lines", "กลับไปหยุดนิ่ง": "Pause it again", "ความเร็ววิดีโอ": "Video speed", "ซูม": "Zoom", "ขยายภาพ": "Enlarge the picture", "ฟอนต์และตัวเลข": "Fonts & digits", "เป้าหมายเซสชัน": "Session goals", "ฉากเคลื่อนไหว": "Animated scene", "ฝนโน้ตท่าหมุน": "Notation rain", "สลับทั้งกลุ่ม": "Toggle group", "เปลี่ยนสีวนไป": "Colour cycle", "เสร็จอยู่แล้ว": "already solved", "ดีสุด · เป้า": "best · goal", "ตรวจดู 15 วิ": "15 s inspection", "ยังไม่มีเวลา": "No times yet", "รังผึ้งนีออน": "Neon honeycomb", "ลุคสำเร็จรูป": "Ready-made looks", "สว่าง สบายตา": "Bright and easy on the eyes", "สแครมเบิลฝึก": "Training scramble:", "หันเข้าหาตัว": " facing you", "เลือกทั้งหมด": "Select all", "กดเพื่อหยุด": "press to stop", "กำลังตรวจดู": "Inspecting", "ครั้งล่าสุด": "latest", "คัดลอกสถิติ": "Copy stats", "ช่วงสุดท้าย": "Last stage", "ฟอนต์ตัวเลข": "Timer font", "ยังไม่เคยทำ": "not done yet", "ลอยตามเมาส์": "Follow mouse", "วาร์ปดวงดาว": "Star warp", "เลือกรูปภาพ / GIF": "Choose image / GIF", "เลือกวิดีโอ": "Choose video", "เอฟเฟกต์ลอย": "Floating effects", "แพนซ้าย-ขวา": "Pan", "ไม่เลือกเลย": "Select none", "กลีบซากุระ": "Sakura petals", "คัดลอกแล้ว": "Copied", "จำนวนครั้ง": "Solves", "รายการเวลา": "Times list", "ลูกบิดร่วง": "Falling cubes", "ล้างเซสชัน": "Clear session", "สไตล์การ์ด": "Card style", "เคสที่แล้ว": "Last case", "เซ็ตอัปเคส": "Case setup", "คลื่นทะเล": "Ocean waves", "ค่าเฉลี่ย": "Averages", "ดีสุดใหม่!": " — new best!", "PB ใหม่!": "New PB!", "ตอนนี้ใช้": "Now using", "ลูกบิดลอย": "Floating cubes", "สแครมเบิล": "Scramble", "เลย์เอาต์": "Layout", "เลือกโหมด": "Choose mode", "แสงออโรรา": "Aurora", "กาแล็กซี": "Galaxy", "ขอบเรือง": "Glow outline", "ครั้งที่ ": "Solve #", "ครั้งที่": "Solve #", "จะลบทั้ง": "This deletes all", "ซินธ์เวฟ": "Synthwave", "ดาวระยิบ": "Twinkling stars", "ดีที่สุด": "Best", "ตัวอย่าง": "sample", "พื้นหลัง": "Background", "ลบสีท้าย": "Remove last", "ล้างเวลา": "Clear all", "สถิติย่อ": "Quick stats", "สุ่มใหม่": "New scramble", "หยุดนิ่ง": "paused", "หิ่งห้อย": "Fireflies", "เป้าหมาย": "Goals", "เรืองแสง": "Neon glow", "เร็วขึ้น": "faster by", "เลือกเคส": "Cases", "เลือกไว้": "Selected", "เวลาจริง": "raw time", "ไล่สีเอง": "Gradient", "คลาสสิก": "Classic", "ความยาว": "Length", "ค้างไว้…": "Hold…", "ค้างไว้": "Hold", "ซันเซ็ต": "Sunset", "ซูมช้าๆ": "Slow zoom", "ต่ำกว่า": "Under", "ทั้งหมด": "times", "ฟองสบู่": "Bubbles", "ล้างเลย": "Clear", "สตูดิโอ": "Studio", "สีแนะนำ": "Suggested colours", "เนบิวลา": "Nebula", "+ เพิ่มสี": "+ Add colour", "เพิ่มสี": "Add colour", "เวลารวม": "Total time", "เส้นขอบ": "Outline", "เส้นตรง": "Linear", "แก้เป้า": "Edit goals", "แยกช่วง": "Splits", "โหมดฝึก CFOP": "CFOP training modes", "โอเชียน": "Ocean", "ไว้ล่าง": " on the bottom,", "ข้อมูล": "Data", "คัดลอก JSON": "Copy JSON", "คัดลอก": "Copy", "ซากุระ": "Sakura", "ตอนนี้": "Now", "ยกเลิก": "Cancel", "รีเซ็ต": "Reset", "วินาที": "seconds", "สีพื้น": "Solid colour", "สีหลัก": "Main", "ออโรรา": "Aurora", "เซสชัน": "Session", "เต็มจอ": "Fill", "เรียบๆ": "Simple", "เหลือง": "yellow", "เอาออก": "Remove", "ใช้ลุค": "Applied look", "กระจก": "Glass", "กลุ่ม": "Group", "ครั้ง": "solves", "ชุดสี": "Palette", "ดีสุด": "Best", "ทุกสี": "Any", "นีออน": "Neon", "มัทฉะ": "Matcha", "วงกลม": "Radial", "สายฝน": "Rain", "สีธีม": "Theme colours", "สีรอง": "Second", "หายใจ": "Breathe", "เรียบ": "Plain", "เสร็จ": "Done", "ไม่มี": "None", "ไล่สี": "Gradient", "ช่วง": "stages", "ซ่อน": "Hide", "นิ่ง": "Still", "ปกติ": "normal", "พอดี": "Fit", "สุ่ม": "Any", "หิมะ": "Snow", "เวลา": "Time", "แล้ว": "", "ใหม่": "new", "ขาว": "white", "จับ": "Track", "จาก": "of", "ถือ": "Hold ", "ทึบ": "Solid", "ท่า": "moves", "ยืด": "Stretch", "ลอย": "Floating", "เคส": "cases", "เมช": "Mesh", "ลบ": "Delete", "วิ": "s", "สี": "Colour", "เขียว": "green", "น้ำเงิน": "blue", "แดง": "red", "ส้ม": "orange", "เลือกเคส F2L": "Choose F2L cases", "เลือกเคส OLL": "Choose OLL cases", "เลือกเคส PLL": "Choose PLL cases", "เลือกไฟล์ หรือลากมาวางตรงนี้": "Choose a file or drop it here", "ดูทุกสี": "All colours", "8 วินาที!": "8 seconds!", "12 วินาที!": "12 seconds!", "เปิดอยู่": "On", "ปิดอยู่": "Off", "ปิด": "Close", "เซ็ตอัป": "Setup", "0 = หยุดนิ่ง": "0 = paused", "100% = ปกติ": "100% = normal", "ติดตั้งแอปแล้ว เปิดได้จากหน้าจอโฮม": "App installed. Open it from your home screen", "ติดตั้งแอป": "Install app", "ดำสนิท เรียบ แบบแอปมือถือ": "Pure black, clean, phone-app style", "ดำสนิท": "Pure black", "สูตร CFOP ทั้งหมด": "All CFOP algorithms", "สูตร CFOP": "CFOP algorithms", "ฝึกเคสนี้": "Practise", "ถือสีเหลืองไว้บน สีเขียวหันเข้าหาตัว · ใส่คู่ที่ช่องหน้า-ขวา · สูตรหาด้วยโปรแกรมให้สั้นที่สุด ใช้แค่ R U F": "Yellow on top, green facing you · the pair goes into the front-right slot · shortest solutions found by a program, using only R U F", "ถือสีเหลืองไว้บน · ภาพมองจากด้านบน สีเหลืองคือสติกเกอร์ที่ต้องหันขึ้น": "Yellow on top · seen from above, yellow marks the stickers that must face up", "ถือสีเหลืองไว้บน · ภาพมองจากด้านบน ปรับ U ก่อนหรือหลังได้ตามมุมที่เห็น": "Yellow on top · seen from above, adjust U before or after as needed", "ฝึกเฉพาะ": "Practising only", "เปลี่ยนได้ที่ เลือกเคส": "change it in Cases", "เมนูหลัก": "Main menu", "จับเวลา": "Timer", "เวลาทั้งหมด": "Times", "สถิติ": "Stats", "เซสชันทั้งหมด": "Sessions", "ตั้งค่า": "Settings", "สถิติปัจจุบัน": "Current stats", "ค่าเฉลี่ยเซสชัน": "Session mean", "สถิติดีสุด": "Best stats", "ส่งออกข้อมูล": "Export data", "เก็บไว้ในเครื่องนี้": "Saved on this device", "พัซเซิล": "Puzzles", "ฝึก CFOP": "CFOP training", "ทั่วไป": "General", "หน้าตา": "Appearance", "ติดตั้งเป็นแอป": "Install as an app", "ข้อมูลและเกี่ยวกับ": "Data & about", "ภาษา": "Language", "กติกา WCA: เกิน 15 วิ +2, เกิน 17 วิ DNF": "WCA rules: over 15 s is +2, over 17 s is DNF", "บี๊บตอนตรวจดูครบ 8 และ 12 วินาที": "Beeps at 8 and 12 seconds of inspection", "ตัวจับเวลารูบิกพร้อมโหมดฝึก CFOP ทุกอย่างเก็บไว้ในเครื่องนี้เท่านั้น ไม่มีบัญชี ไม่มีโฆษณา": "A Rubik's cube timer with CFOP training. Everything stays on this device: no account, no ads", "สำรองหรือย้ายข้อมูล": "Back up or move data", "ดูโค้ดบน GitHub": "View code on GitHub", "ดูวิธีบิดแบบ 3D": "Watch it in 3D", "ดู 3D": "3D", "ลากเพื่อหมุนดูรอบๆ": "Drag to look around", "ลูกบาศก์ 3 มิติ": "3D cube", "ถอยหนึ่งท่า": "Back one move", "ไปท่าถัดไป": "Next move", "เริ่มใหม่": "Restart", "เล่น": "Play", "หยุด": "Pause", "ความเร็ว": "Speed", "ท่าที่": "Move", "ไม่มีท่าให้เล่น": "No moves to play", "เริ่มจากลูกที่แก้เสร็จ ถือเหลืองบน เขียวหน้า": "Starts from a solved cube, yellow on top, green in front", "เริ่มจากลูกที่แก้เสร็จ ถือขาวบน เขียวหน้า": "Starts from a solved cube, white on top, green in front", "เริ่มจากหลังสแครมเบิล ถือขาวบน เขียวหน้า": "Starts after the scramble, white on top, green in front", "ao5 ดีสุด มาจาก 5 ครั้งนี้": "Best ao5 comes from these 5 solves", "ตัดครั้งที่เร็วสุดและช้าสุดทิ้ง (ขีดฆ่า) แล้วเฉลี่ย 3 ครั้งที่เหลือ": "The fastest and slowest are dropped (struck out) and the other 3 are averaged", "ยังไม่มี": "none yet", "ไม่นับ DNF": "excluding DNF", "ค่าเฉลี่ยย้อนหลัง": "Rolling averages", "สูตร": "Algs"};
   const EN_KEYS = Object.keys(EN).sort((a, b) => b.length - a.length);
   const HAS_TH = /[฀-๿]/;
   const toEN = s => { for (const k of EN_KEYS) if (s.indexOf(k) >= 0) s = s.split(k).join(EN[k]); return s; };
@@ -2530,6 +2627,164 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
   }
 
+  /* ---------- 3D cube viewer: animates any move sequence (faces, wide, slices, rotations) ---------- */
+  function vParse(tok, n) {
+    const mt = /^([URFDLBurfdlbMESxyz])(w?)(['2]*)$/.exec(tok); if (!mt) return null;
+    const m = n - 1, b = mt[1], suf = mt[3], t = suf.includes('2') ? (suf.includes("'") ? -2 : 2) : suf.includes("'") ? -1 : 1;
+    if ('URFDLB'.includes(b)) { const [ax, s] = FACES[b], d = mt[2] ? 2 : 1; return { ax, k: -s * t, sel: p => s * p[ax] >= m - 2 * (d - 1) }; }
+    if ('urfdlb'.includes(b)) { const [ax, s] = FACES[b.toUpperCase()]; return { ax, k: -s * t, sel: p => s * p[ax] >= m - 2 }; }
+    if (b === 'M') return { ax: 0, k: t, sel: p => Math.abs(p[0]) < m };
+    if (b === 'E') return { ax: 1, k: t, sel: p => Math.abs(p[1]) < m };
+    if (b === 'S') return { ax: 2, k: -t, sel: p => Math.abs(p[2]) < m };
+    return { ax: 'xyz'.indexOf(b), k: -t, sel: () => true };
+  }
+  function vApply(st, n, tok) { const sp = vParse(tok, n); if (!sp) return; for (const q of st) if (sp.sel(q.p)) { rot90(q.p, sp.ax, sp.k); rot90(q.n, sp.ax, sp.k); } }
+  function rotA(v, ax, a) {
+    const c = Math.cos(a), s = Math.sin(a), [x, y, z] = v;
+    return ax === 0 ? [x, y * c - z * s, y * s + z * c] : ax === 1 ? [x * c + z * s, y, -x * s + z * c] : [x * c - y * s, x * s + y * c, z];
+  }
+  const tokens = s => (Array.isArray(s) ? s : String(s).split(/\s+/)).filter(x => x && vParse(x, 3));
+  const invTok = x => x.endsWith("'") ? x.slice(0, -1) : x.endsWith('2') ? x : x + "'";
+  const invSeq = a => tokens(a).reverse().map(invTok);
+  const cloneSt = st => st.map(q => ({ p: q.p.slice(), n: q.n.slice(), c: q.c }));
+  const hexRgb = h => { h = String(h).trim(); if (/^#[0-9a-f]{3}$/i.test(h)) h = '#' + [...h.slice(1)].map(c => c + c).join(''); const m = /^#([0-9a-f]{6})$/i.exec(h); if (!m) return [136, 136, 136]; const v = parseInt(m[1], 16); return [v >> 16 & 255, v >> 8 & 255, v & 255]; };
+  const SVG_I = {
+    reset: '<svg viewBox="0 0 24 24"><path d="M6 5v14M19 5l-9 7 9 7z"/></svg>',
+    prev: '<svg viewBox="0 0 24 24"><path d="M16 5l-9 7 9 7z"/></svg>',
+    next: '<svg viewBox="0 0 24 24"><path d="M8 5l9 7-9 7z"/></svg>',
+    play: '<svg viewBox="0 0 24 24"><path d="M7 4.5l13 7.5-13 7.5z"/></svg>',
+    pause: '<svg viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>',
+  };
+  let V = null, v3dBack = null;
+  // o: { title, sub, moves, start (instant setup), n, cmap ('std' | 'train'), pitch, back }
+  function openViewer(o) {
+    const n = o.n || 3, toks = tokens(o.moves);
+    const startSt = makeCube(n); for (const t of o.start || []) vApply(startSt, n, t);
+    const speed = V ? V.speed : 1;
+    V = { n, toks, startSt, st: cloneSt(startSt), idx: 0, anim: null, playing: false, speed, yaw: -0.62, pitch: o.pitch || 0.5, cmap: COLORS[o.cmap || 'train'], alive: true, wait: 0 };
+    v3dBack = o.back || null;
+    const btn = (act, icon, label, cls = '') => `<button class="vbtn ${cls}" type="button" data-act="${act}" aria-label="${label}" title="${label}">${icon}</button>`;
+    openModal(`<div class="vhead"><div><h3>${o.title}</h3>${o.sub ? `<p class="muted">${o.sub}</p>` : ''}</div><button class="btn pri" type="button" data-act="close" data-focus>ปิด</button></div>
+      <div class="vwrap"><canvas id="v3c" aria-label="ลูกบาศก์ 3 มิติ"></canvas><span class="vhint">ลากเพื่อหมุนดูรอบๆ</span></div>
+      <div class="vmoves" id="vMoves"></div>
+      <div class="vctl">${btn('v-reset', SVG_I.reset, 'เริ่มใหม่')}${btn('v-prev', SVG_I.prev, 'ถอยหนึ่งท่า')}${btn('v-play', SVG_I.play, 'เล่น', 'big')}${btn('v-next', SVG_I.next, 'ไปท่าถัดไป')}</div>
+      <div class="vfoot"><span id="vStep"></span><div class="modectl"><div class="grp"><span>ความเร็ว</span>${[[0.5, '0.5×'], [1, '1×'], [2, '2×']].map(([v, l]) => `<button type="button" data-act="v-speed:${v}" aria-pressed="${v === speed}">${l}</button>`).join('')}</div></div></div>`, v3dAct, 'v3d', 'v3d');
+    const cv = $('#v3c'); V.cv = cv; V.ctx = cv.getContext('2d');
+    let drag = null;
+    cv.addEventListener('pointerdown', e => { drag = [e.clientX, e.clientY]; try { cv.setPointerCapture(e.pointerId); } catch (er) { /* not supported */ } });
+    cv.addEventListener('pointermove', e => {
+      if (!drag) return;
+      V.yaw += (e.clientX - drag[0]) * 0.011; V.pitch = Math.max(-1.45, Math.min(1.45, V.pitch + (e.clientY - drag[1]) * 0.011));
+      drag = [e.clientX, e.clientY];
+    });
+    const end = () => { drag = null; }; cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+    renderVMoves();
+    let last = performance.now();
+    const loop = now => {
+      if (!V || !V.alive) return;
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      vTick(dt); vDraw();
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+    if (V.toks.length) setTimeout(() => { if (V && V.alive && V.idx === 0 && !V.anim) { V.playing = true; renderVMoves(); } }, 600);
+  }
+  function vStateAt(i) { const st = cloneSt(V.startSt); for (let k = 0; k < i; k++) vApply(st, V.n, V.toks[k]); return st; }
+  function vStart(tok, back) { V.anim = { tok, back, sp: vParse(tok, V.n), e: 0, dur: (/2/.test(tok) ? 0.62 : 0.42) / V.speed }; renderVMoves(); }
+  function vFinish() {
+    const a = V.anim; if (!a) return;
+    vApply(V.st, V.n, a.tok); V.idx += a.back ? -1 : 1; V.anim = null;
+    if (V.idx >= V.toks.length) V.playing = false;
+    renderVMoves();
+  }
+  function vTick(dt) {
+    if (V.anim) { V.anim.e += dt / V.anim.dur; if (V.anim.e >= 1) { vFinish(); V.wait = 0.08 / V.speed; } return; }
+    if (V.playing) { V.wait -= dt; if (V.wait <= 0 && V.idx < V.toks.length) vStart(V.toks[V.idx], false); }
+  }
+  function v3dAct(act) {
+    if (!V) return;
+    const [k, v] = act.split(':');
+    if (k === 'v-play') {
+      if (V.anim) vFinish();
+      if (!V.playing && V.idx >= V.toks.length) { V.st = cloneSt(V.startSt); V.idx = 0; }
+      V.playing = !V.playing; V.wait = 0.2;
+    } else if (k === 'v-next') { V.playing = false; if (V.anim) vFinish(); if (V.idx < V.toks.length) vStart(V.toks[V.idx], false); }
+    else if (k === 'v-prev') { V.playing = false; if (V.anim) vFinish(); if (V.idx > 0) vStart(invTok(V.toks[V.idx - 1]), true); }
+    else if (k === 'v-reset') { V.playing = false; V.anim = null; V.idx = 0; V.st = cloneSt(V.startSt); }
+    else if (k === 'v-jump') { V.playing = false; V.anim = null; V.idx = +v; V.st = vStateAt(V.idx); if (V.idx < V.toks.length) vStart(V.toks[V.idx], false); }
+    else if (k === 'v-speed') { V.speed = +v; sheet.querySelectorAll('[data-act^="v-speed"]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.act === act))); }
+    renderVMoves();
+  }
+  function v3dKey(e) {
+    if (e.code === 'Space') { e.preventDefault(); v3dAct('v-play'); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); v3dAct('v-next'); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); v3dAct('v-prev'); }
+  }
+  function renderVMoves() {
+    if (!V) return;
+    const cur = V.anim ? (V.anim.back ? V.idx - 1 : V.idx) : V.idx;
+    const box = $('#vMoves');
+    if (box) box.innerHTML = V.toks.length ? V.toks.map((t, i) => `<button type="button" class="vm${i < V.idx && !(V.anim && V.anim.back && i === V.idx - 1) ? ' done' : ''}${i === cur && V.anim ? ' cur' : ''}" data-act="v-jump:${i}">${t}</button>`).join('') : '<span class="muted">ไม่มีท่าให้เล่น</span>';
+    const stp = $('#vStep'); if (stp) stp.textContent = `ท่าที่ ${Math.min(V.idx, V.toks.length)} / ${V.toks.length}`;
+    const pb = sheet.querySelector('[data-act="v-play"]');
+    if (pb) { pb.innerHTML = V.playing ? SVG_I.pause : SVG_I.play; pb.setAttribute('aria-label', V.playing ? 'หยุด' : 'เล่น'); }
+  }
+  function vDraw() {
+    const cv = V.cv, ctx = V.ctx; if (!cv || !ctx) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight;
+    if (!W || !H) return;
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    const n = V.n, m = n - 1, D = n * 7, f = Math.min(W, H) * 0.43 * D / (n * 1.78);
+    const cy = Math.cos(V.yaw), sy = Math.sin(V.yaw), cp = Math.cos(V.pitch), sp = Math.sin(V.pitch);
+    const view = ([x, y, z]) => { const x1 = x * cy + z * sy, z1 = -x * sy + z * cy; return [x1, y * cp - z1 * sp, y * sp + z1 * cp]; };
+    const proj = v => { const k = f / (D - v[2]); return [W / 2 + v[0] * k, H / 2 - v[1] * k]; };
+    const rs = getComputedStyle(document.documentElement), col = {};
+    for (const L in V.cmap) col[L] = hexRgb(rs.getPropertyValue('--c-' + V.cmap[L]));
+    const stick = new Map();
+    for (const q of V.st) { const k = q.p.join(); if (!stick.has(k)) stick.set(k, []); stick.get(k).push(q); }
+    const a = V.anim, ang = a ? a.sp.k * Math.PI / 2 * (a.e < 0.5 ? 2 * a.e * a.e : 1 - Math.pow(-2 * a.e + 2, 2) / 2) : 0;
+    const cubies = [];
+    for (let x = -m; x <= m; x += 2) for (let y = -m; y <= m; y += 2) for (let z = -m; z <= m; z += 2) {
+      const p = [x, y, z], mv = a && a.sp.sel(p), tr = mv ? (v => rotA(v, a.sp.ax, ang)) : (v => v);
+      cubies.push({ p, tr, z: view(tr(p))[2], st: stick.get(p.join()) || [] });
+    }
+    cubies.sort((u, v) => u.z - v.z);
+    const DIRS = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+    const light = (() => { const l = [-0.35, 0.75, 0.55], L = Math.hypot(...l); return l.map(v => v / L); })();
+    const poly = (pts, fill) => { ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); };
+    ctx.lineJoin = 'round';
+    for (const c of cubies) {
+      for (const d of DIRS) {
+        const nw = c.tr(d), vn = view(nw);
+        const fcW = c.tr([c.p[0] + d[0], c.p[1] + d[1], c.p[2] + d[2]]), vc = view(fcW);
+        if (vn[0] * -vc[0] + vn[1] * -vc[1] + vn[2] * (D - vc[2]) <= 0) continue;
+        const ax = d.findIndex(v => v !== 0), u = [0, 0, 0], w = [0, 0, 0]; u[(ax + 1) % 3] = 1; w[(ax + 2) % 3] = 1;
+        const quad = (s, off) => [[1, 1], [1, -1], [-1, -1], [-1, 1]].map(([i, j]) => proj(view(c.tr([0, 1, 2].map(k => c.p[k] + d[k] * off + (u[k] * i + w[k] * j) * s)))));
+        const shade = 0.72 + 0.28 * Math.max(0, nw[0] * light[0] + nw[1] * light[1] + nw[2] * light[2]);
+        poly(quad(0.985, 0.985), `rgb(${Math.round(13 * shade)},${Math.round(14 * shade)},${Math.round(20 * shade)})`);
+        const sk = c.st.find(q => q.n[0] === d[0] && q.n[1] === d[1] && q.n[2] === d[2]);
+        if (sk) {
+          const rgb = col[sk.c] || [136, 136, 136], pts = quad(0.8, 1.0);
+          poly(pts, `rgb(${rgb.map(v => Math.round(v * shade)).join(',')})`);
+          ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = Math.max(1, f / (D - vc[2]) * 0.16); ctx.stroke();
+        }
+      }
+    }
+  }
+  function openCaseViewer(set, id, back) {
+    const c = CASES[set][id];
+    openViewer({ title: caseTitle(set, id), sub: `${groupOf(set, id)} · ${c.alg}`, moves: c.alg, start: invSeq(c.alg), cmap: 'train', pitch: set === 'f2l' ? 0.42 : 0.78, back });
+  }
+  function openScrViewer(scr, back) {
+    const set = trainSet();
+    openViewer({ title: set ? 'เซ็ตอัปเคส' : `สแครมเบิล ${PUZ[state.puzzle].label}`, sub: set ? 'เริ่มจากลูกที่แก้เสร็จ ถือเหลืองบน เขียวหน้า' : 'เริ่มจากลูกที่แก้เสร็จ ถือขาวบน เขียวหน้า', moves: scr, n: PUZ[state.puzzle].n, cmap: set ? 'train' : 'std', pitch: 0.5, back });
+  }
+  function openCrossViewer(scr, c, back) {
+    const r = crossSolve(scr, c);
+    openViewer({ title: `Cross ${XNAMES[c]} · ${r.len} ท่า`, sub: 'เริ่มจากหลังสแครมเบิล ถือขาวบน เขียวหน้า', moves: [r.rot, ...r.sol].filter(Boolean), start: scr, cmap: 'std', pitch: 0.35, back });
+  }
+
   /* ---------- CFOP algorithm library ---------- */
   let algSet = 'f2l';
   const ALG_NOTE = {
@@ -2543,7 +2798,7 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     const card = id => {
       const c = CASES[algSet][id], p = per[id];
       return `<div class="algc">${caseLL(algSet, id)}<div><b>${caseTitle(algSet, id)}</b><code>${c.alg}</code>${p ? `<span class="ps">${p.n} ครั้ง · ${p.ok ? fmt(p.sum / p.ok) : 'DNF'}</span>` : ''}</div>
-        <div class="alga"><button class="btn ghost" type="button" data-act="copyalg:${id}">คัดลอก</button><button class="btn" type="button" data-act="practice:${id}">ฝึกเคสนี้</button></div></div>`;
+        <div class="alga"><button class="btn pri" type="button" data-act="v3d:${id}">ดู 3D</button><button class="btn ghost" type="button" data-act="copyalg:${id}">คัดลอก</button><button class="btn" type="button" data-act="practice:${id}">ฝึกเคสนี้</button></div></div>`;
     };
     return `<div class="algtabs">${[['f2l', 'F2L · 41'], ['oll', 'OLL · 57'], ['pll', 'PLL · 21']].map(([k, l]) => `<button type="button" data-act="aset:${k}" aria-pressed="${k === algSet}">${l}</button>`).join('')}</div>
       <p class="muted" style="margin:10px 2px 0;font-size:13.5px">${ALG_NOTE[algSet]}</p>
@@ -2553,6 +2808,11 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
   function algAct(act, rerender) {
     const i = act.indexOf(':'), k = act.slice(0, i), v = act.slice(i + 1);
     if (k === 'aset') { algSet = v; rerender(); return true; }
+    if (k === 'v3d') {
+      const inModal = !modalEl.hidden && sheet.dataset.kind === 'algs', top = inModal ? sheet.scrollTop : 0, s = algSet;
+      openCaseViewer(s, v, inModal ? () => { algSet = s; openAlgs(); sheet.scrollTop = top; } : null);
+      return true;
+    }
     if (k === 'copyalg') { copy(CASES[algSet][v].alg, 'คัดลอกแล้ว'); return true; }
     if (k === 'practice') {
       if (phase !== 'idle') return true;
@@ -2593,20 +2853,20 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     if (mtab === 'settings') renderMSettings();
   }
   function renderMStats(St) {
-    const list = sess(), b5 = St.bestOf(5);
+    const list = sess(), b5 = St.bestOf(5), dnf = list.filter(s => s.pen === 'dnf').length;
     let five = '';
     if (b5 != null) {
       const i = St.roll[5].indexOf(b5), win = list.slice(i - 4, i + 1).map(eff);
       const order = win.map((v, k) => [v, k]).sort((a, b) => a[0] - b[0]), lo = order[0][1], hi = order[4][1];
-      five = `<div class="list5">${win.map((v, k) => k === lo || k === hi ? `<span class="tr">(${fmt(v)})</span>` : fmt(v)).join('<br>')}</div>`;
+      five = `<div class="mcard full"><div class="k">ao5 ดีสุด มาจาก 5 ครั้งนี้</div><div class="five">${win.map((v, k) => `<span class="${k === lo || k === hi ? 'tr' : ''}">${fmt(v)}</span>`).join('')}</div><div class="sub">ตัดครั้งที่เร็วสุดและช้าสุดทิ้ง (ขีดฆ่า) แล้วเฉลี่ย 3 ครั้งที่เหลือ</div></div>`;
     }
     $('#mStatsPage').innerHTML = `<div class="msp">
-      <div class="mcard tall"><div class="k">สถิติปัจจุบัน</div><div class="row2"><span>ao5</span><b>${fmt(St.cur(5))}</b><span>ao12</span><b>${fmt(St.cur(12))}</b><span>ao100</span><b>${fmt(St.cur(100))}</b></div></div>
-      <div class="mcard"><div class="k">จำนวนครั้ง</div><div class="big">${list.length}</div></div>
-      <div class="mcard"><div class="k">ค่าเฉลี่ยเซสชัน</div><div class="big">${fmt(St.mean)}</div></div>
-      <div class="mcard hl"><div class="k">ดีที่สุด</div><div class="big">${fmt(St.best)}</div></div>
-      <div class="mcard tall"><div class="k">ao5 ดีสุด</div><div class="big acc">${fmt(b5)}</div>${five}</div>
-      <div class="mcard"><div class="k">สถิติดีสุด</div><div class="row2"><span>ao12</span><b>${fmt(St.bestOf(12))}</b><span>ao100</span><b>${fmt(St.bestOf(100))}</b></div></div>
+      <div class="mcard hl"><div class="k">ดีที่สุด</div><div class="big">${fmt(St.best)}</div><div class="sub">${St.pbIndex >= 0 ? `ครั้งที่ ${St.pbIndex + 1}` : 'ยังไม่มี'}</div></div>
+      <div class="mcard"><div class="k">จำนวนครั้ง</div><div class="big">${list.length}</div><div class="sub">DNF ${dnf}</div></div>
+      <div class="mcard"><div class="k">ค่าเฉลี่ย</div><div class="big">${fmt(St.mean)}</div><div class="sub">ไม่นับ DNF</div></div>
+      <div class="mcard"><div class="k">ao5 ดีสุด</div><div class="big acc">${fmt(b5)}</div><div class="sub">ตอนนี้ ${fmt(St.cur(5))}</div></div>
+      <div class="mcard full"><div class="k">ค่าเฉลี่ยย้อนหลัง</div><table class="mavg"><thead><tr><th></th><th>ตอนนี้</th><th>ดีสุด</th></tr></thead><tbody>${AVG_NS.map(N => `<tr><td>ao${N}</td><td>${fmt(St.cur(N))}</td><td class="b">${fmt(St.bestOf(N))}</td></tr>`).join('')}</tbody></table></div>
+      ${five}
     </div>`;
   }
   function renderMSessions() {
@@ -2671,6 +2931,15 @@ textarea{width:100%;min-height:90px;background:var(--panel-2);border:1px solid v
     if (k === 'general') openGeneral(); else if (k === 'about') openAbout(); else if (k === 'install') $('#installBtn').click(); else openStudio(k);
   });
   if (mq.addEventListener) mq.addEventListener('change', renderMobile); else if (mq.addListener) mq.addListener(renderMobile);
+
+  document.addEventListener('click', e => {
+    if (phase !== 'idle') return;
+    const a = e.target.closest('[data-v3d]');
+    if (a) { const [s, id] = a.dataset.v3d.split(':'); return openCaseViewer(s, id); }
+    const x = e.target.closest('[data-xc3]');
+    if (x) { const w = x.closest('[data-scr]'); return openCrossViewer(w.dataset.scr.split(' '), x.dataset.xc3); }
+    if (e.target.closest('.b3') && modalEl.hidden) openScrViewer(scramble.slice());
+  });
 
   /* ---------- boot ---------- */
   applyLang();
